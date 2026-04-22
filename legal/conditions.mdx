@@ -1,0 +1,359 @@
+---
+title: "Conditions of Use"
+description: "Technical requirements, limitations, and operational conditions for using Unipay"
+---
+
+# Conditions of Use
+
+Technical requirements and operational conditions for using Unipay privacy infrastructure.
+
+## 1. Wallet Compatibility
+
+### Supported Wallets
+
+<CardGroup cols={2}>
+  <Card title="Browser Wallets" icon="browser">
+    Phantom, Solflare, Backpack, and any Wallet Standard-compliant Solana wallet
+  </Card>
+  <Card title="Hardware Wallets" icon="shield-check">
+    Ledger and Trezor supported via their respective browser adapters
+  </Card>
+</CardGroup>
+
+### Technical Requirements
+
+| Requirement | Specification |
+|-------------|---------------|
+| **Browser** | Chrome 90+, Firefox 88+, Safari 14+, Edge 90+ |
+| **JavaScript** | Must be enabled |
+| **Local Storage** | Required for session key storage |
+| **Network** | Stable internet connection |
+| **Wallet Extension** | Latest version recommended |
+
+### Wallet Standard Compliance
+
+All supported wallets must implement:
+- Solana Wallet Standard interface
+- Transaction signing capabilities
+- Account connection/disconnection
+- Network switching (mainnet-beta)
+
+```typescript
+// Required wallet capabilities
+interface WalletCapabilities {
+  connect(): Promise<PublicKey>;
+  disconnect(): Promise<void>;
+  signTransaction(transaction: Transaction): Promise<Transaction>;
+  signAllTransactions(transactions: Transaction[]): Promise<Transaction[]>;
+}
+```
+
+## 2. Transaction Limits
+
+### Amount Limits
+
+| Asset | Wallet Mode | Private Mode |
+|-------|-------------|--------------|
+| **SOL** | No limit | Routing layer minimum (varies) |
+| **USDC** | No limit | Routing layer minimum (varies) |
+| **USDT** | No limit | Routing layer minimum (varies) |
+
+<Note>
+Private flows are subject to routing layer minimums that vary per asset and change without notice. The client surfaces the minimum inline when an amount falls below it.
+</Note>
+
+### Batch Limits
+
+| Operation | Wallet Mode | Private Mode |
+|-----------|-------------|--------------|
+| **Payroll Recipients** | 12 maximum | No limit |
+| **Transaction Size** | 1232 bytes (Solana limit) | N/A |
+| **Instructions** | ~20 per transaction | N/A |
+
+**Wallet Mode Limitation:**
+Wallet-mode payroll is capped at 12 recipients per signed transaction to stay within the Solana 1232-byte transaction limit.
+
+**Private Mode Scaling:**
+Private-mode payroll has no per-batch cap but scales linearly in routing-layer calls.
+
+## 3. Network Requirements
+
+### Solana Network
+
+- **Supported Network**: Solana mainnet-beta only
+- **Devnet/Testnet**: Not exposed in the UI
+- **Token Programs**: Classic Token Program and Token-2022 (balance display only)
+
+### RPC Configuration
+
+```typescript
+// Default RPC endpoint
+const RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC || 
+                    'https://api.mainnet-beta.solana.com';
+
+// Solana Labs public endpoint is blocked for reliability
+if (RPC_ENDPOINT.includes('api.mainnet-beta.solana.com')) {
+  throw new Error('Public endpoint blocked - use custom RPC');
+}
+```
+
+### Custom RPC Usage
+
+Users supplying their own RPC endpoint via `NEXT_PUBLIC_SOLANA_RPC` are responsible for:
+- Staying within provider rate limits
+- Ensuring endpoint reliability and uptime
+- Maintaining connection security (HTTPS only)
+- Monitoring for service degradation
+
+## 4. Slippage and Pricing
+
+### Slippage Tolerance
+
+Available slippage settings for swaps:
+
+| Setting | Tolerance | Recommended For |
+|---------|-----------|-----------------|
+| **Auto** | Dynamic (0.1-2%) | Most users |
+| **0.5%** | Fixed 0.5% | Stable conditions |
+| **1%** | Fixed 1% | Normal volatility |
+| **3%** | Fixed 3% | High volatility |
+| **Custom** | User-defined | Advanced users |
+
+### Slippage Protection
+
+<Warning>
+Swaps that exceed your slippage tolerance are rejected before you sign the transaction. No funds are lost due to slippage protection, but you may need to adjust tolerance or retry.
+</Warning>
+
+```typescript
+// Slippage calculation
+const minOutputAmount = expectedOutput * (1 - slippageBps / 10000);
+
+// Transaction fails if: actualOutput < minOutputAmount
+```
+
+## 5. Session Management
+
+### Session Keys
+
+The client generates a session keypair on first use:
+
+```typescript
+// Session key storage
+const sessionKey = Keypair.generate();
+localStorage.setItem('unipay_session_key_v1', 
+  base64.encode(sessionKey.secretKey));
+```
+
+### Backup Responsibility
+
+<Warning>
+**Critical**: The session key lives only in your browser. Clearing site data without first exporting the recovery file results in permanent loss of session-scoped state. Funds custodied by your primary wallet are unaffected.
+</Warning>
+
+### Recovery Process
+
+1. **Export**: Download recovery file (.txt format)
+2. **Store Safely**: Keep backup file secure and accessible
+3. **Import**: Upload recovery file to restore session
+4. **Verify**: Check balance reconciliation after restore
+
+## 6. Fee Structure
+
+### Network Fees
+
+All transactions include standard Solana network fees:
+- **Base Fee**: ~0.000005 SOL per signature
+- **Instruction Fee**: ~0.000005 SOL per instruction
+- **Priority Fees**: Variable based on network congestion
+
+### Service Fees
+
+| Mode | Additional Fees |
+|------|-----------------|
+| **Wallet Mode** | None - network fees only |
+| **Private Mode** | Routing layer fee (varies by asset) |
+
+### Fee Calculation Examples
+
+```typescript
+// Wallet mode: SOL transfer
+const fee = 0.000005; // Single signature
+
+// Wallet mode: Payroll (5 recipients)
+const fee = 0.000005 + (5 * 0.000005); // Base + instructions
+
+// Private mode: Additional routing fee
+const totalFee = networkFee + routingFee;
+```
+
+## 7. Performance Expectations
+
+### Response Times
+
+| Operation | Expected Time |
+|-----------|---------------|
+| **Wallet Connection** | < 2 seconds |
+| **Quote Generation** | < 3 seconds |
+| **Transaction Signing** | < 5 seconds |
+| **Wallet Mode Execution** | < 30 seconds |
+| **Private Mode Completion** | 30-120 seconds |
+
+### Status Updates
+
+Private mode transactions provide real-time status:
+- **Polling Frequency**: Every 6 seconds
+- **Timeout**: 10 minutes maximum
+- **Retry Logic**: Automatic retry on temporary failures
+
+## 8. Browser Requirements
+
+### Required Features
+
+- **ES2020 Support**: Modern JavaScript features
+- **WebCrypto API**: Cryptographic operations
+- **Local Storage**: Session persistence
+- **Fetch API**: Network requests
+- **WebAssembly**: Performance optimizations
+
+### Security Headers
+
+The application enforces strict security policies:
+
+```http
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+```
+
+## 9. Error Handling
+
+### Common Error Scenarios
+
+| Error Type | Cause | User Action |
+|------------|-------|-------------|
+| **Insufficient Balance** | Not enough tokens + fees | Add funds or reduce amount |
+| **Network Congestion** | High transaction volume | Retry with higher priority fee |
+| **Slippage Exceeded** | Price movement during swap | Increase slippage tolerance |
+| **Routing Unavailable** | Private mode capacity | Use wallet mode or retry later |
+
+### Error Reporting
+
+<Note>
+Failure is loud: Quote failures, RPC errors, and routing errors surface on the same screen that caused them, with the machine-readable code shown below the human-readable message.
+</Note>
+
+## 10. Data Usage
+
+### Local Storage
+
+The application stores minimal data locally:
+- **Session Keys**: Encrypted keypair for privacy features
+- **User Preferences**: UI settings and slippage tolerance
+- **Transaction Cache**: Recent transaction status (temporary)
+
+### Network Requests
+
+All network requests are:
+- **HTTPS Only**: Encrypted in transit
+- **Minimal Data**: Only necessary information transmitted
+- **No PII**: No personally identifiable information collected
+- **Stateless**: No server-side user sessions
+
+## 11. Accessibility
+
+### WCAG Compliance
+
+The application strives for WCAG 2.1 AA compliance:
+- **Keyboard Navigation**: Full keyboard accessibility
+- **Screen Reader Support**: ARIA labels and semantic HTML
+- **Color Contrast**: Minimum 4.5:1 contrast ratio
+- **Focus Management**: Clear focus indicators
+
+### Assistive Technology
+
+Tested with:
+- **Screen Readers**: NVDA, JAWS, VoiceOver
+- **Keyboard Navigation**: Tab, arrow keys, Enter/Space
+- **Voice Control**: Dragon NaturallySpeaking
+- **High Contrast**: Windows High Contrast mode
+
+## 12. Mobile Compatibility
+
+### Mobile Browser Support
+
+| Browser | iOS | Android |
+|---------|-----|---------|
+| **Safari** | ✅ iOS 14+ | N/A |
+| **Chrome** | ✅ iOS 14+ | ✅ Android 8+ |
+| **Firefox** | ✅ iOS 14+ | ✅ Android 8+ |
+| **Edge** | ✅ iOS 14+ | ✅ Android 8+ |
+
+### Mobile Wallet Integration
+
+- **Phantom Mobile**: Full support via WalletConnect
+- **Solflare Mobile**: Full support via WalletConnect
+- **Trust Wallet**: Limited support (send/receive only)
+
+## 13. Maintenance Windows
+
+### Scheduled Maintenance
+
+- **Frequency**: Monthly, first Sunday 2-4 AM UTC
+- **Duration**: Maximum 2 hours
+- **Notice**: 48 hours advance notice via Discord/Twitter
+- **Impact**: Service unavailable during maintenance
+
+### Emergency Maintenance
+
+- **Trigger**: Critical security issues or network problems
+- **Notice**: Best effort notification via status page
+- **Duration**: Variable based on issue severity
+
+## 14. Rate Limits
+
+### API Rate Limits
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| **Quote Requests** | 60 per minute | Per IP address |
+| **Transaction Submission** | 10 per minute | Per wallet |
+| **Status Checks** | 120 per minute | Per transaction |
+
+### Abuse Prevention
+
+Excessive usage may result in:
+- Temporary rate limiting
+- CAPTCHA challenges
+- IP address blocking
+- Service suspension
+
+## 15. Compliance Requirements
+
+### User Verification
+
+No KYC required for basic usage, but we reserve the right to:
+- Request additional information for large transactions
+- Block access from prohibited jurisdictions
+- Comply with law enforcement requests
+- Implement additional verification as required by law
+
+### Record Keeping
+
+Users are responsible for:
+- Maintaining transaction records for tax purposes
+- Complying with local reporting requirements
+- Keeping backup files secure
+- Understanding privacy model limitations
+
+---
+
+<CardGroup cols={2}>
+  <Card title="Terms of Service" icon="file-contract" href="/legal/terms">
+    Full terms and conditions for using Unipay
+  </Card>
+  <Card title="Get Started" icon="rocket" href="/quickstart">
+    Start using Unipay with your first transaction
+  </Card>
+</CardGroup>

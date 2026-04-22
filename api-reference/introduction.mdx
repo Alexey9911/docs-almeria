@@ -1,33 +1,173 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "API Introduction"
+description: "REST API for integrating Unipay privacy features into your applications"
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+# API Introduction
 
-## Welcome
+The Unipay API provides programmatic access to privacy-enhanced Solana transactions. Build applications that can send, swap, and distribute tokens with graph-break privacy protection.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+## Base URL
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+```
+https://api.unipay.com/v1
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API requests require authentication using API keys:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     -H "Content-Type: application/json" \
+     https://api.unipay.com/v1/quote
+```
+
+### Getting API Keys
+
+1. Visit [app.unipay.com/api](https://app.unipay.com/api)
+2. Connect your Solana wallet
+3. Generate API key with desired permissions
+4. Store securely - keys are shown only once
+
+## Rate Limits
+
+| Tier | Requests/Minute | Monthly Quota |
+|------|-----------------|---------------|
+| **Free** | 60 | 10,000 |
+| **Pro** | 300 | 100,000 |
+| **Enterprise** | 1,000 | 1,000,000 |
+
+Rate limit headers are included in all responses:
+
+```http
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1640995200
+```
+
+## Supported Assets
+
+| Asset | Symbol | Mint Address |
+|-------|--------|--------------|
+| **Solana** | SOL | `So11111111111111111111111111111111111111112` |
+| **USD Coin** | USDC | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| **Tether** | USDT | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` |
+
+## Privacy Modes
+
+### Wallet Mode
+Direct transactions signed by user's wallet:
+- Lower fees (network only)
+- Faster execution
+- Direct on-chain link visible
+
+### Private Mode  
+Privacy-enhanced routing through ephemeral addresses:
+- Higher fees (network + routing)
+- Slower execution (30-120 seconds)
+- Graph-break privacy protection
+
+## Error Handling
+
+All errors return JSON with consistent structure:
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
+{
+  "error": {
+    "code": "INSUFFICIENT_BALANCE",
+    "message": "Insufficient balance for transaction",
+    "details": {
+      "required": "1.5 SOL",
+      "available": "1.2 SOL"
+    }
   }
-]
+}
 ```
+
+### Common Error Codes
+
+| Code | Description |
+|------|-------------|
+| `INVALID_ADDRESS` | Malformed Solana address |
+| `INSUFFICIENT_BALANCE` | Not enough tokens for transaction |
+| `SLIPPAGE_EXCEEDED` | Price moved beyond tolerance |
+| `ROUTING_UNAVAILABLE` | Private mode temporarily unavailable |
+| `RATE_LIMIT_EXCEEDED` | Too many requests |
+
+## SDKs and Libraries
+
+### TypeScript/JavaScript
+
+```bash
+npm install @unipay/sdk
+```
+
+```typescript
+import { UnipaySDK } from '@unipay/sdk';
+
+const unipay = new UnipaySDK({
+  apiKey: 'your-api-key',
+  network: 'mainnet-beta'
+});
+
+// Get quote
+const quote = await unipay.getQuote({
+  inputAsset: 'SOL',
+  outputAsset: 'USDC',
+  amount: 10,
+  mode: 'private'
+});
+```
+
+### Python
+
+```bash
+pip install unipay-python
+```
+
+```python
+from unipay import UnipayClient
+
+client = UnipayClient(api_key='your-api-key')
+
+# Get quote
+quote = client.get_quote(
+    input_asset='SOL',
+    output_asset='USDC', 
+    amount=10,
+    mode='private'
+)
+```
+
+## Webhooks
+
+Subscribe to transaction status updates:
+
+```json
+{
+  "url": "https://your-app.com/webhooks/unipay",
+  "events": ["transaction.completed", "transaction.failed"],
+  "secret": "webhook-secret-for-verification"
+}
+```
+
+### Webhook Events
+
+| Event | Description |
+|-------|-------------|
+| `transaction.pending` | Transaction submitted to network |
+| `transaction.confirmed` | Transaction confirmed on-chain |
+| `transaction.completed` | Transaction fully processed |
+| `transaction.failed` | Transaction failed or reverted |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Get Quote" icon="calculator" href="/api-reference/endpoint/get">
+    Get pricing for swaps and transfers
+  </Card>
+  <Card title="Create Transaction" icon="plus" href="/api-reference/endpoint/create">
+    Submit transactions for processing
+  </Card>
+</CardGroup>

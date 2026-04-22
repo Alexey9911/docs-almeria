@@ -1,0 +1,323 @@
+---
+title: "Payroll"
+description: "Batch payments to multiple recipients in USDC or USDT with single signature or private distribution"
+---
+
+# Payroll
+
+Distribute USDC or USDT to multiple recipients efficiently. Choose between single-transaction batch payments or privacy-enhanced distribution that fans out through independent routing.
+
+## Supported Assets
+
+<CardGroup cols={2}>
+  <Card title="USDC" icon="dollar-sign">
+    USD Coin stablecoin
+    Batch up to 12 recipients
+  </Card>
+  <Card title="USDT" icon="dollar-sign">
+    Tether stablecoin
+    Batch up to 12 recipients
+  </Card>
+</CardGroup>
+
+## Execution Modes
+
+### Wallet Mode
+
+Single transaction with multiple recipients:
+
+<Steps>
+  <Step title="Add Recipients">
+    Enter up to 12 recipient addresses and amounts. Each row is validated independently.
+  </Step>
+  <Step title="Review Batch">
+    Preview the complete transaction with total amount and fees.
+  </Step>
+  <Step title="Sign Once">
+    Single signature covers all transfers in the batch.
+  </Step>
+  <Step title="Execute">
+    One signed transaction, one Solscan link on success.
+  </Step>
+</Steps>
+
+**Transaction Structure:**
+```typescript
+// Each recipient becomes an instruction
+const instructions = recipients.map(recipient => [
+  // Create ATA if needed (idempotent)
+  createAssociatedTokenAccountIdempotentInstruction(
+    payer.publicKey,
+    recipient.ata,
+    recipient.address,
+    mint
+  ),
+  // Transfer tokens
+  createTransferCheckedInstruction(
+    payerATA,
+    mint,
+    recipient.ata,
+    payer.publicKey,
+    recipient.amount,
+    decimals
+  )
+]);
+```
+
+### Private Mode
+
+Independent private transfers to each recipient:
+
+<Steps>
+  <Step title="Add Recipients">
+    Same interface as wallet mode, but each recipient gets independent privacy.
+  </Step>
+  <Step title="Generate Deposit Addresses">
+    Routing layer provides N ephemeral addresses for N recipients.
+  </Step>
+  <Step title="Fund Deposits">
+    You send the total amount, which gets distributed across ephemeral addresses.
+  </Step>
+  <Step title="Track Distribution">
+    Each recipient's transfer is tracked independently in the status stepper.
+  </Step>
+</Steps>
+
+**Privacy Benefits:**
+- Each recipient receives funds from a different routing address
+- No single transaction links you to all recipients
+- Recipients cannot see other recipients in the batch
+
+## Recipient Management
+
+### Adding Recipients
+
+| Field | Validation | Required |
+|-------|------------|----------|
+| **Address** | Valid Solana address (base58, 32-44 chars) | ✅ |
+| **Amount** | Positive number, sufficient balance | ✅ |
+| **Label** | Optional description for your records | ❌ |
+
+### Validation Per Row
+
+```typescript
+const validateRecipient = (recipient) => {
+  // Address validation
+  try {
+    new PublicKey(recipient.address);
+  } catch {
+    return "Invalid Solana address";
+  }
+  
+  // Amount validation
+  if (recipient.amount <= 0) {
+    return "Amount must be positive";
+  }
+  
+  // Token support validation
+  if (!['USDC', 'USDT'].includes(recipient.token)) {
+    return "Only USDC and USDT supported";
+  }
+  
+  return null; // Valid
+};
+```
+
+### Batch Limits
+
+| Mode | Max Recipients | Transaction Limit |
+|------|----------------|-------------------|
+| **Wallet Mode** | 12 | Solana 1232-byte limit |
+| **Private Mode** | No limit | Scales linearly in routing calls |
+
+<Note>
+Wallet mode is capped at 12 recipients to stay within Solana's transaction size limit. Private mode has no per-batch cap but each recipient requires a separate routing call.
+</Note>
+
+## Amount Helpers
+
+Distribute amounts efficiently:
+
+| Helper | Function |
+|--------|----------|
+| **Equal Split** | Divide total amount equally among all recipients |
+| **Percentage** | Allocate based on percentage weights |
+| **Remaining** | Auto-calculate final recipient to use all funds |
+
+### Equal Split Example
+
+```typescript
+// Split 1000 USDC among 5 recipients
+const totalAmount = 1000;
+const recipientCount = 5;
+const amountPerRecipient = totalAmount / recipientCount; // 200 USDC each
+```
+
+## CSV Import/Export
+
+### Import Recipients
+
+Upload a CSV file with recipient data:
+
+```csv
+address,amount,label
+7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU,100.50,Alice
+9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM,250.00,Bob
+4xKLtg3CX98e97TXJSDpbD5jBkheTqA83TZRuJosgBsV,75.25,Charlie
+```
+
+### Export Records
+
+Download completed payroll batches for record-keeping:
+
+- **CSV format**: Spreadsheet-compatible
+- **PDF format**: Professional invoice format
+- **JSON format**: Machine-readable for accounting systems
+
+## Examples
+
+### Monthly Team Payroll (Wallet Mode)
+
+```bash
+# 1. Connect wallet with sufficient USDC
+# 2. Select "Payroll" → "Wallet Mode"
+# 3. Add recipients:
+#    - Alice: 2500 USDC
+#    - Bob: 3000 USDC  
+#    - Charlie: 2000 USDC
+#    - Diana: 2750 USDC
+# 4. Review total: 10,250 USDC + fees
+# 5. Sign single transaction
+# 6. All recipients receive funds simultaneously
+```
+
+### Contractor Payments (Private Mode)
+
+```bash
+# 1. Connect wallet with USDT
+# 2. Select "Payroll" → "Private Mode"
+# 3. Add recipients:
+#    - Contractor A: 500 USDT
+#    - Contractor B: 750 USDT
+#    - Contractor C: 300 USDT
+# 4. Fund total amount to routing layer
+# 5. Track each payment independently
+# 6. Recipients receive from different addresses
+```
+
+## Status Tracking
+
+### Wallet Mode
+
+Single transaction status:
+- **Pending**: Transaction submitted to network
+- **Confirming**: Awaiting block confirmation
+- **Success**: All recipients received funds
+- **Failed**: Transaction reverted, funds returned
+
+### Private Mode
+
+Per-recipient tracking:
+- **Queued**: Waiting for routing layer processing
+- **Processing**: Individual transfer in progress  
+- **Sent**: Recipient's transfer completed
+- **Failed**: Individual transfer failed, will retry
+
+## Fees
+
+| Mode | Fee Structure |
+|------|---------------|
+| **Wallet Mode** | Network fees only (~0.000005 SOL per instruction) |
+| **Private Mode** | Network fees + routing fee per recipient |
+
+### Fee Calculation
+
+```typescript
+// Wallet mode: Base fee + (recipients * instruction_fee)
+const walletModeFee = 0.000005 + (recipients.length * 0.000005);
+
+// Private mode: Base fee + (recipients * routing_fee)  
+const privateModeFee = 0.000005 + (recipients.length * routingFee);
+```
+
+## ATA Management
+
+### Automatic ATA Creation
+
+All payroll transactions include idempotent Associated Token Account (ATA) creation:
+
+```typescript
+// Creates ATA only if it doesn't exist
+createAssociatedTokenAccountIdempotentInstruction(
+  payer.publicKey,    // Fee payer
+  recipientATA,       // ATA address
+  recipient.address,  // Owner
+  mint               // Token mint
+);
+```
+
+**Benefits:**
+- Recipients don't need to pre-create token accounts
+- No failed transactions due to missing ATAs
+- Idempotent: safe to call multiple times
+
+## Compliance & Records
+
+### Transaction Records
+
+Every payroll batch generates:
+- **Transaction ID**: Unique identifier for the batch
+- **Timestamp**: Execution time (UTC)
+- **Recipients**: Complete list with amounts
+- **Total**: Sum of all payments plus fees
+- **Status**: Success/failure for each recipient
+
+### Tax Reporting
+
+Export formats suitable for:
+- **Accounting software**: QuickBooks, Xero integration
+- **Tax preparation**: Schedule C, 1099 reporting
+- **Audit trails**: Complete transaction history
+
+## Troubleshooting
+
+### Common Issues
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Insufficient balance" | Not enough tokens for total + fees | Check total includes all fees |
+| "Invalid recipient" | Malformed address in batch | Validate all addresses |
+| "Transaction too large" | > 12 recipients in wallet mode | Use private mode or split batch |
+| "ATA creation failed" | Network congestion | Retry with higher priority fee |
+
+### Best Practices
+
+- **Test small batches**: Start with 2-3 recipients to verify setup
+- **Verify addresses**: Double-check all recipient addresses
+- **Monitor balances**: Ensure sufficient funds for total + fees
+- **Keep records**: Export transaction data for accounting
+
+## Security Considerations
+
+<Warning>
+**Address Verification**: Always verify recipient addresses before executing payroll. Incorrect addresses result in permanent loss of funds.
+</Warning>
+
+### Validation Checklist
+
+- [ ] All addresses are valid Solana addresses
+- [ ] Amounts are positive and correctly formatted
+- [ ] Total amount + fees ≤ available balance
+- [ ] Recipients are intended payees
+- [ ] Token type matches intended distribution
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Privacy Model" icon="shield" href="/features/privacy">
+    Understand privacy protections and limitations
+  </Card>
+  <Card title="Security Guide" icon="lock" href="/about/security">
+    Learn about security best practices
+  </Card>
+</CardGroup>

@@ -1,0 +1,235 @@
+---
+title: "Swap"
+description: "Exchange SOL for USDC/USDT with optional privacy protection through on-chain liquidity aggregators"
+---
+
+# Swap
+
+Exchange SOL for USDC or USDT using on-chain liquidity aggregators. Choose between direct wallet swaps or privacy-enhanced routing that breaks the link between your input and output addresses.
+
+## Supported Pairs
+
+<CardGroup cols={2}>
+  <Card title="SOL → USDC" icon="arrow-right">
+    Swap native SOL for USD Coin
+    Liquidity: Deep
+  </Card>
+  <Card title="SOL → USDT" icon="arrow-right">
+    Swap native SOL for Tether
+    Liquidity: Deep
+  </Card>
+</CardGroup>
+
+<Note>
+Additional trading pairs will be added based on liquidity depth and user demand. Currently focused on SOL to major stablecoins.
+</Note>
+
+## Execution Modes
+
+### Wallet Mode
+
+Direct swap through on-chain aggregator:
+
+<Steps>
+  <Step title="Get Quote">
+    Client queries on-chain aggregator for best available rate across all DEXs.
+  </Step>
+  <Step title="Build Transaction">
+    Aggregator returns a versioned transaction with optimal routing.
+  </Step>
+  <Step title="Sign Locally">
+    Your wallet signs the transaction in the browser.
+  </Step>
+  <Step title="Execute via Proxy">
+    Transaction is broadcast through a stateless proxy service.
+  </Step>
+</Steps>
+
+**Aggregator Integration:**
+```typescript
+// Quote request
+const quote = await aggregator.getQuote({
+  inputMint: SOL_MINT,
+  outputMint: USDC_MINT,
+  amount: inputAmount,
+  slippageBps: slippageTolerance
+});
+
+// Transaction construction
+const swapTransaction = await aggregator.getSwapTransaction({
+  quote,
+  userPublicKey: wallet.publicKey
+});
+```
+
+### Private Mode
+
+Anonymous swap through routing layer:
+
+<Steps>
+  <Step title="Request Private Quote">
+    Quote the same pair through the routing layer for privacy-enhanced execution.
+  </Step>
+  <Step title="Deposit to Ephemeral Address">
+    Send SOL to the provided temporary address.
+  </Step>
+  <Step title="Routing Layer Swap">
+    Routing layer executes the swap using its own addresses.
+  </Step>
+  <Step title="Receive Output">
+    You receive USDC/USDT from an address unrelated to your input wallet.
+  </Step>
+</Steps>
+
+**Privacy Benefits:**
+- Input SOL address is not linked to output stablecoin address
+- Swap execution happens through routing layer's addresses
+- Your wallet balance changes are not directly observable
+
+## Slippage Protection
+
+Configure your tolerance for price movement during execution:
+
+| Setting | Tolerance | Use Case |
+|---------|-----------|----------|
+| **Auto** | Dynamic based on market conditions | Recommended for most users |
+| **0.5%** | Low tolerance | Stable market conditions |
+| **1%** | Medium tolerance | Normal market volatility |
+| **3%** | High tolerance | High volatility periods |
+| **Custom** | User-defined (bps resolution) | Advanced users |
+
+```typescript
+// Slippage calculation
+const minOutputAmount = expectedOutput * (1 - slippageBps / 10000);
+
+// Transaction will fail if actual output < minOutputAmount
+```
+
+<Warning>
+Swaps that exceed your slippage tolerance are rejected before you sign the transaction. No funds are lost due to slippage protection.
+</Warning>
+
+## Pricing & Quotes
+
+### Quote Refresh
+
+- **Auto-refresh**: Every 10 seconds while quote is displayed
+- **Manual refresh**: Click refresh button anytime
+- **Quote expiry**: 30 seconds for wallet mode, 60 seconds for private mode
+
+### Price Impact
+
+Large swaps may experience price impact:
+
+| Swap Size | Typical Impact |
+|-----------|----------------|
+| < 10 SOL | < 0.1% |
+| 10-100 SOL | 0.1-0.5% |
+| 100-1000 SOL | 0.5-2% |
+| > 1000 SOL | > 2% |
+
+<Note>
+Price impact is calculated and displayed before you confirm the swap. Consider breaking large swaps into smaller chunks to minimize impact.
+</Note>
+
+## Liquidity Sources
+
+Unipay aggregates liquidity from major Solana DEXs:
+
+- **Raydium**: Concentrated liquidity pools
+- **Orca**: Whirlpools and stable pools  
+- **Jupiter**: Meta-aggregation across protocols
+- **Meteora**: Dynamic fee pools
+- **Phoenix**: Central limit order book
+
+## Examples
+
+### Swap 10 SOL for USDC (Wallet Mode)
+
+```bash
+# 1. Connect wallet with 10+ SOL
+# 2. Select "Swap" → "Wallet Mode"
+# 3. Input: 10 SOL
+# 4. Output: USDC (auto-calculated)
+# 5. Slippage: Auto (recommended)
+# 6. Review quote and price impact
+# 7. Sign and execute transaction
+```
+
+### Swap 5 SOL for USDT (Private Mode)
+
+```bash
+# 1. Connect wallet with 5+ SOL  
+# 2. Select "Swap" → "Private Mode"
+# 3. Input: 5 SOL
+# 4. Output: USDT (auto-calculated)
+# 5. Slippage: 1%
+# 6. Send SOL to ephemeral address
+# 7. Track swap progress through stepper
+# 8. Receive USDT from routing layer
+```
+
+## Advanced Features
+
+### MEV Protection
+
+All swaps include MEV (Maximum Extractable Value) protection:
+
+- **Private mempools**: Transactions routed through protected pools
+- **Atomic execution**: Swap completes in single transaction or fails
+- **Front-running protection**: Orders not visible until execution
+
+### Failed Transaction Handling
+
+If a swap fails:
+
+1. **Wallet Mode**: Transaction reverts, no funds lost, only network fees charged
+2. **Private Mode**: Routing layer refunds input asset minus processing fee
+
+## Fees
+
+| Mode | Fee Structure |
+|------|---------------|
+| **Wallet Mode** | Network fees + DEX fees (typically 0.25-0.3%) |
+| **Private Mode** | Network fees + DEX fees + routing fee (~0.5%) |
+
+## Troubleshooting
+
+### Common Issues
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Insufficient liquidity" | Large swap size | Reduce amount or try later |
+| "Slippage exceeded" | Price moved during execution | Increase slippage tolerance |
+| "Quote expired" | Took too long to confirm | Refresh quote and retry |
+| "Routing unavailable" | Private mode capacity | Use wallet mode or retry later |
+
+### Performance Tips
+
+- **Optimal timing**: Avoid high-volatility periods for better rates
+- **Size optimization**: Consider multiple smaller swaps for large amounts
+- **Slippage tuning**: Use Auto for most cases, custom only if needed
+
+## Security Considerations
+
+<Warning>
+**Private Mode Disclosure**: While private mode breaks the on-chain link between your SOL and stablecoin addresses, the routing layer can recover this linkage if compelled by legal process. This is not cryptographic anonymity.
+</Warning>
+
+### Best Practices
+
+- **Verify quotes**: Always review price impact and output amount
+- **Check addresses**: Ensure you're swapping to the correct token
+- **Monitor execution**: Watch transaction status until completion
+- **Keep records**: Save transaction IDs for your records
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Send Tokens" icon="paper-plane" href="/features/send">
+    Transfer your swapped stablecoins privately
+  </Card>
+  <Card title="Batch Payroll" icon="users" href="/features/payroll">
+    Distribute stablecoins to multiple recipients
+  </Card>
+</CardGroup>

@@ -1,0 +1,207 @@
+---
+title: "Send"
+description: "Transfer SOL, USDC, and USDT privately with graph-break protection"
+---
+
+# Send
+
+Transfer SOL, USDC, and USDT to any Solana address with optional privacy protection. Choose between direct wallet transactions or privacy-enhanced routing.
+
+## Supported Assets
+
+<CardGroup cols={3}>
+  <Card title="SOL" icon="coins">
+    Native Solana token
+    Min: 0.001 SOL
+  </Card>
+  <Card title="USDC" icon="dollar-sign">
+    USD Coin stablecoin
+    Min: varies by mode
+  </Card>
+  <Card title="USDT" icon="dollar-sign">
+    Tether stablecoin  
+    Min: varies by mode
+  </Card>
+</CardGroup>
+
+## Execution Modes
+
+### Wallet Mode
+
+Direct transaction signed locally in your browser:
+
+<Steps>
+  <Step title="Enter Details">
+    Recipient address and amount. Address validation is client-side (base58, 32–44 chars, `PublicKey` parse).
+  </Step>
+  <Step title="Review Transaction">
+    Preview the exact transaction that will be signed, including fees.
+  </Step>
+  <Step title="Sign & Send">
+    Your wallet signs the transaction locally. Nothing leaves the browser unsigned.
+  </Step>
+</Steps>
+
+**Transaction Structure:**
+```typescript
+// SOL Transfer
+SystemProgram.transfer({
+  fromPubkey: wallet.publicKey,
+  toPubkey: recipientAddress,
+  lamports: amount
+})
+
+// SPL Token Transfer
+createTransferCheckedInstruction(
+  sourceATA,
+  mint,
+  destinationATA,
+  wallet.publicKey,
+  amount,
+  decimals
+)
+```
+
+### Private Mode
+
+Privacy-enhanced transfer through routing layer:
+
+<Steps>
+  <Step title="Request Deposit Address">
+    Client requests an ephemeral deposit address from the privacy routing layer.
+  </Step>
+  <Step title="Send to Ephemeral Address">
+    You send funds to the provided temporary address.
+  </Step>
+  <Step title="Routing Layer Processing">
+    The routing layer detects your deposit and initiates the output transaction.
+  </Step>
+  <Step title="Recipient Receives">
+    Recipient receives funds from the routing layer's address, breaking the direct link.
+  </Step>
+</Steps>
+
+**Live Status Tracking:**
+- **Waiting**: Deposit address generated, waiting for your transaction
+- **Confirming**: Your deposit transaction is being confirmed
+- **Exchanging**: Routing layer is processing the transfer
+- **Sending**: Output transaction is being broadcast
+- **Finished**: Recipient has received the funds
+
+<Note>
+Status is polled every 6 seconds and displayed in real-time. The entire process typically takes 30-60 seconds.
+</Note>
+
+## Amount Helpers
+
+Quick-select buttons for common amounts:
+
+| Button | Calculation |
+|--------|-------------|
+| **25%** | 25% of available balance |
+| **50%** | 50% of available balance |
+| **MAX** | Maximum sendable amount |
+
+<Warning>
+For SOL transfers, a 0.001 SOL fee reserve is automatically applied to MAX calculations to ensure the transaction can be processed.
+</Warning>
+
+## Address Validation
+
+All recipient addresses are validated client-side:
+
+```typescript
+// Validation criteria
+const isValidAddress = (address: string) => {
+  try {
+    // Must be valid base58
+    const pubkey = new PublicKey(address);
+    
+    // Must be 32-44 characters
+    if (address.length < 32 || address.length > 44) return false;
+    
+    // Must parse as valid PublicKey
+    return PublicKey.isOnCurve(pubkey);
+  } catch {
+    return false;
+  }
+};
+```
+
+## Privacy Considerations
+
+### What Private Mode Protects
+
+- **Transaction Graph**: Direct link between your address and recipient is broken
+- **Balance Analysis**: Your wallet balance is not directly observable by recipient
+- **Timing Correlation**: Transactions are batched and processed with random delays
+
+### What Private Mode Doesn't Protect
+
+- **Routing Layer Logs**: Service provider can link transactions if compelled by law
+- **Amount Correlation**: Unique amounts may still be linkable through timing
+- **Network Surveillance**: Your IP address and browser fingerprint
+
+<Warning>
+Private mode provides graph-break privacy, not cryptographic anonymity. The routing layer can recover linkability if subpoenaed. This tradeoff is disclosed every time you initiate a private transfer.
+</Warning>
+
+## Fees
+
+| Mode | Fee Structure |
+|------|---------------|
+| **Wallet Mode** | Standard Solana network fees only (~0.000005 SOL) |
+| **Private Mode** | Network fees + routing layer fee (varies by asset) |
+
+## Examples
+
+### Send 1 SOL (Wallet Mode)
+
+```bash
+# 1. Connect wallet
+# 2. Select "Send" → "Wallet Mode"  
+# 3. Asset: SOL
+# 4. Recipient: 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+# 5. Amount: 1 SOL
+# 6. Review & sign transaction
+```
+
+### Send 100 USDC (Private Mode)
+
+```bash
+# 1. Connect wallet
+# 2. Select "Send" → "Private Mode"
+# 3. Asset: USDC  
+# 4. Recipient: 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM
+# 5. Amount: 100 USDC
+# 6. Send to ephemeral address: 4xKLtg3CX98e97TXJSDpbD5jBkheTqA83TZRuJosgBsV
+# 7. Track progress through status stepper
+```
+
+## Troubleshooting
+
+### Common Issues
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Insufficient balance" | Not enough tokens + fees | Check balance includes network fees |
+| "Invalid address" | Malformed recipient address | Verify address is valid Solana address |
+| "Transaction failed" | Network congestion | Retry with higher priority fee |
+| "Routing unavailable" | Private mode capacity | Try again later or use wallet mode |
+
+### Getting Help
+
+- **Transaction stuck**: Check status on [Solscan](https://solscan.io)
+- **Private mode issues**: Contact support with transaction ID
+- **General questions**: Join our [Discord community](https://discord.gg/unipay)
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Try Swap" icon="arrow-right-arrow-left" href="/features/swap">
+    Exchange SOL for stablecoins anonymously
+  </Card>
+  <Card title="Batch Payroll" icon="users" href="/features/payroll">
+    Send to multiple recipients in one transaction
+  </Card>
+</CardGroup>
