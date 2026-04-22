@@ -1,97 +1,62 @@
 ---
 title: "Introduction"
-description: "Welcome to the new home for your documentation"
+description: "Privacy layer for Solana that lets users move, swap, and distribute SOL and SPL tokens without exposing transaction graphs"
 ---
 
-## Setting up
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.png"
+  alt="Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.png"
+  alt="Hero Dark"
+/>
 
-Get your documentation site up and running in minutes.
+# What Unipay is
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Unipay is a privacy layer for Solana that lets users move, swap, and distribute SOL and major SPL tokens without exposing the graph between origin and destination addresses. The product is delivered as a non-custodial web client plus a small set of stateless HTTP services; no account, no KYC, no deposit into a protocol pool.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Send Privately" icon="paper-plane" href="/features/send">
+    Transfer SOL, USDC, and USDT with graph-break privacy
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Swap Anonymously" icon="arrow-right-arrow-left" href="/features/swap">
+    Exchange SOL to stablecoins without linking addresses
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Payroll Distribution" icon="users" href="/features/payroll">
+    Batch payments to up to 12 recipients in one transaction
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Non-Custodial" icon="shield-check" href="/features/privacy">
+    Your keys, your funds. No deposits, no pools, no custody
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## How it works
 
-Everything you need to create world-class documentation.
+The client offers two execution modes per flow (send / swap / payroll):
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+**Wallet mode.** The user signs a versioned transaction locally. For swaps the client builds the order against an on-chain liquidity aggregator; for transfers it assembles a `SystemProgram.transfer` (SOL) or a `TransferChecked` + idempotent ATA creation (SPL) instruction set. Nothing leaves the browser unsigned.
 
-## Need inspiration?
+**Private mode.** The client requests an ephemeral deposit address from the privacy routing layer, the user sends the input asset to that address, and the recipient receives the output asset on the same or a different chain. The direct on-chain link between sender and recipient is removed by the intermediate hop.
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
+Both modes share the same UI surface; the difference is which module signs the output transaction.
+
+## What it is not
+
+<Warning>
+Unipay is not a shielded pool and does not produce zero-knowledge proofs. It is a graph-break primitive: against passive chain analysis the source and destination addresses are not directly linkable; against an adversary that subpoenas the routing layer, linkability is recoverable.
+</Warning>
+
+## Network support
+
+- **Solana mainnet-beta only**
+- Token-2022 mints are recognised for balance display
+- Devnet and testnet are not exposed in the UI
+
+## Getting Started
+
+<Card title="Quick Start" icon="rocket" href="/quickstart">
+  Connect your wallet and make your first private transaction in under 2 minutes
 </Card>
