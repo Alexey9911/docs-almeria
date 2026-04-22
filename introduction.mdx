@@ -19,55 +19,34 @@ description: "Privacy layer for Solana that lets users move, swap, and distribut
 Unipay is a privacy layer for Solana that lets users move, swap, and distribute SOL and major SPL tokens without exposing the graph between origin and destination addresses. The product is delivered as a non-custodial web client plus a small set of stateless HTTP services; no account, no KYC, no deposit into a protocol pool.
 
 <CardGroup cols={2}>
-  <Card
-    title="Send Privately"
-    icon="paper-plane"
-    href="/features/send"
-  >
-    Transfer SOL, USDC, and USDT with graph-break privacy protection
+  <Card title="Send Privately" icon="paper-plane" href="/features/send">
+    Transfer SOL, USDC, and USDT with graph-break privacy
   </Card>
-  <Card
-    title="Swap Anonymously"
-    icon="arrow-right-arrow-left"
-    href="/features/swap"
-  >
-    Exchange SOL to stablecoins without linking input and output addresses
+  <Card title="Swap Anonymously" icon="arrow-right-arrow-left" href="/features/swap">
+    Exchange SOL to stablecoins without linking addresses
   </Card>
-  <Card
-    title="Payroll Distribution"
-    icon="users"
-    href="/features/payroll"
-  >
-    Batch payments to up to 12 recipients in a single transaction
+  <Card title="Payroll Distribution" icon="users" href="/features/payroll">
+    Batch payments to up to 12 recipients in one transaction
   </Card>
-  <Card
-    title="Non-Custodial"
-    icon="shield-check"
-    href="/features/privacy"
-  >
+  <Card title="Non-Custodial" icon="shield-check" href="/features/privacy">
     Your keys, your funds. No deposits, no pools, no custody
   </Card>
 </CardGroup>
 
-## How it works at 1000ft
+## How it works
 
 The client offers two execution modes per flow (send / swap / payroll):
 
-<Steps>
-  <Step title="Wallet Mode">
-    The user signs a versioned transaction locally. For swaps the client builds the order against an on-chain liquidity aggregator; for transfers it assembles a `SystemProgram.transfer` (SOL) or a `TransferChecked` + idempotent ATA creation (SPL) instruction set. Nothing leaves the browser unsigned.
-  </Step>
-  <Step title="Private Mode">
-    The client requests an ephemeral deposit address from the privacy routing layer, the user sends the input asset to that address, and the recipient receives the output asset on the same or a different chain. The direct on-chain link between sender and recipient is removed by the intermediate hop.
-  </Step>
-</Steps>
+**Wallet mode.** The user signs a versioned transaction locally. For swaps the client builds the order against an on-chain liquidity aggregator; for transfers it assembles a `SystemProgram.transfer` (SOL) or a `TransferChecked` + idempotent ATA creation (SPL) instruction set. Nothing leaves the browser unsigned.
+
+**Private mode.** The client requests an ephemeral deposit address from the privacy routing layer, the user sends the input asset to that address, and the recipient receives the output asset on the same or a different chain. The direct on-chain link between sender and recipient is removed by the intermediate hop.
 
 Both modes share the same UI surface; the difference is which module signs the output transaction.
 
 ## What it is not
 
 <Warning>
-Unipay is not a shielded pool and does not produce zero-knowledge proofs. It is a graph-break primitive: against passive chain analysis the source and destination addresses are not directly linkable; against an adversary that subpoenas the routing layer, linkability is recoverable. This tradeoff is disclosed in-product every time a Private flow is initiated.
+Unipay is not a shielded pool and does not produce zero-knowledge proofs. It is a graph-break primitive: against passive chain analysis the source and destination addresses are not directly linkable; against an adversary that subpoenas the routing layer, linkability is recoverable.
 </Warning>
 
 ## Network support

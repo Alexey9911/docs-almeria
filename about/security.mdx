@@ -1,6 +1,6 @@
 ---
 title: "Security"
-description: "Security practices, audit reports, and responsible disclosure policy for Unipay"
+description: "Security practices, audit reports, and responsible disclosure policy"
 ---
 
 # Security
@@ -11,16 +11,16 @@ Security is fundamental to everything we build. We treat user funds as uninsured
 
 <CardGroup cols={2}>
   <Card title="Non-Custodial" icon="shield-check">
-    We never hold user funds. Your keys, your control.
+    We never hold user funds
   </Card>
   <Card title="Stateless Services" icon="server">
-    No user data stored server-side. Rebooting loses no state.
+    No user data stored server-side
   </Card>
   <Card title="Open Source" icon="code">
-    Critical components are open source for community review.
+    Critical components are open source
   </Card>
   <Card title="Continuous Auditing" icon="magnifying-glass">
-    Regular security reviews by leading firms.
+    Regular security reviews
   </Card>
 </CardGroup>
 
@@ -52,8 +52,6 @@ const result = await fetch('/api/broadcast', {
 
 ### Routing Layer Security
 
-Our privacy routing infrastructure is designed with security-first principles:
-
 <Steps>
   <Step title="Ephemeral Addresses">
     Each transaction uses a fresh, single-use deposit address generated with cryptographically secure randomness.
@@ -69,23 +67,14 @@ Our privacy routing infrastructure is designed with security-first principles:
   </Step>
 </Steps>
 
-### Infrastructure Security
-
-| Component | Security Measures |
-|-----------|-------------------|
-| **Web Application** | CSP headers, HTTPS only, subresource integrity |
-| **API Services** | Rate limiting, input validation, CORS policies |
-| **RPC Endpoints** | Load balancing, failover, DDoS protection |
-| **Monitoring** | 24/7 SOC, automated incident response |
-
 ## Audit Reports
 
 We work with leading security firms to validate our implementations:
 
 ### Trail of Bits (March 2026)
 
-**Scope:** Smart contract architecture and client-side security
-**Duration:** 4 weeks
+**Scope:** Smart contract architecture and client-side security  
+**Duration:** 4 weeks  
 **Findings:** 2 medium, 5 low severity issues (all resolved)
 
 **Key Recommendations Implemented:**
@@ -93,11 +82,9 @@ We work with leading security firms to validate our implementations:
 - Improved error handling for edge cases
 - Additional client-side security headers
 
-[Download Full Report](https://audits.unipay.com/trail-of-bits-2026-03.pdf)
-
 ### Kudelski Security (January 2026)
 
-**Scope:** Cryptographic implementation and privacy model
+**Scope:** Cryptographic implementation and privacy model  
 **Duration:** 3 weeks  
 **Findings:** 1 medium, 3 low severity issues (all resolved)
 
@@ -106,39 +93,9 @@ We work with leading security firms to validate our implementations:
 - Enhanced session key derivation
 - Improved timing attack resistance
 
-[Download Full Report](https://audits.unipay.com/kudelski-2026-01.pdf)
-
-### Consensys Diligence (November 2025)
-
-**Scope:** Economic security and incentive analysis
-**Duration:** 2 weeks
-**Findings:** 0 high, 1 medium, 2 low severity issues (all resolved)
-
-**Key Recommendations Implemented:**
-- Fee structure optimization
-- MEV protection enhancements
-- Economic attack vector mitigation
-
-[Download Full Report](https://audits.unipay.com/consensys-2025-11.pdf)
-
 ## Bug Bounty Program
 
 We maintain an active bug bounty program to incentivize security research:
-
-### Scope
-
-**In Scope:**
-- Web application (app.unipay.com)
-- API endpoints (api.unipay.com)
-- Client-side JavaScript code
-- Smart contract interactions
-- Privacy model vulnerabilities
-
-**Out of Scope:**
-- Social engineering attacks
-- Physical security
-- Third-party services (wallets, RPC providers)
-- Denial of service attacks
 
 ### Rewards
 
@@ -147,18 +104,16 @@ We maintain an active bug bounty program to incentivize security research:
 | **Critical** | $10,000 - $50,000 | Fund theft, private key extraction |
 | **High** | $5,000 - $15,000 | Transaction manipulation, privacy bypass |
 | **Medium** | $1,000 - $5,000 | Information disclosure, DoS |
-| **Low** | $100 - $1,000 | Minor information leaks, UX issues |
+| **Low** | $100 - $1,000 | Minor information leaks |
 
 ### How to Report
 
-1. **Email**: security@unipay.com (PGP key available)
+1. **Email**: security@unipay.com
 2. **Include**: Detailed reproduction steps and impact assessment
 3. **Response**: We respond within 48 hours on business days
 4. **Timeline**: 90 days for resolution before public disclosure
 
 ## Responsible Disclosure
-
-We follow industry-standard responsible disclosure practices:
 
 <Steps>
   <Step title="Initial Report">
@@ -178,166 +133,21 @@ We follow industry-standard responsible disclosure practices:
   </Step>
 </Steps>
 
-## Security Best Practices
+## Best Practices
 
 ### For Users
 
 <CardGroup cols={2}>
   <Card title="Wallet Security" icon="wallet">
-    Use hardware wallets when possible. Keep seed phrases secure and offline.
+    Use hardware wallets when possible
   </Card>
   <Card title="Verify Addresses" icon="magnifying-glass">
-    Always double-check recipient addresses before confirming transactions.
+    Always double-check recipient addresses
   </Card>
   <Card title="Monitor Transactions" icon="eye">
-    Track transaction status and verify completion on Solscan.
+    Track transaction status on Solscan
   </Card>
-  <Card title="Keep Software Updated" icon="arrow-up">
-    Use latest wallet versions and keep browsers updated.
-  </Card>
-</CardGroup>
-
-### For Developers
-
-```typescript
-// Always validate inputs
-const validateAddress = (address: string): boolean => {
-  try {
-    new PublicKey(address);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-// Use proper error handling
-try {
-  const transaction = await buildTransaction(params);
-  const signature = await sendTransaction(transaction);
-  return { success: true, signature };
-} catch (error) {
-  console.error('Transaction failed:', error);
-  return { success: false, error: error.message };
-}
-
-// Implement proper session management
-const sessionKey = localStorage.getItem('unipay_session_key_v1');
-if (!sessionKey || isExpired(sessionKey)) {
-  generateNewSession();
-}
-```
-
-## Incident Response
-
-### Response Team
-
-Our security incident response team includes:
-- **Security Lead**: Coordinates response and external communication
-- **Engineering Lead**: Technical analysis and fix implementation  
-- **Operations Lead**: Infrastructure and monitoring
-- **Legal Counsel**: Regulatory compliance and disclosure requirements
-
-### Response Process
-
-| Phase | Timeline | Actions |
-|-------|----------|---------|
-| **Detection** | 0-15 minutes | Automated alerts, manual discovery |
-| **Assessment** | 15-60 minutes | Severity analysis, impact evaluation |
-| **Containment** | 1-4 hours | Stop ongoing damage, preserve evidence |
-| **Resolution** | 4-24 hours | Deploy fixes, restore normal operation |
-| **Communication** | Ongoing | User notification, public disclosure |
-
-### Communication Channels
-
-During security incidents:
-- **Status Page**: status.unipay.com
-- **Discord**: #security-updates channel
-- **Twitter**: @unipay official account
-- **Email**: Direct notification for affected users
-
-## Compliance & Regulations
-
-### Regulatory Compliance
-
-We work with legal experts to ensure compliance with applicable regulations:
-
-- **AML/KYC**: No customer data collected, but routing layer maintains transaction logs
-- **GDPR**: Minimal data collection, user control over session data
-- **SOX**: Financial controls and audit trails for corporate users
-- **Regional Laws**: Compliance with local privacy and financial regulations
-
-### Data Handling
-
-| Data Type | Storage | Retention | Access |
-|-----------|---------|-----------|--------|
-| **Transaction Logs** | Encrypted, routing layer | 7 years | Legal process only |
-| **Session Keys** | Browser localStorage | User controlled | User only |
-| **API Logs** | Encrypted, no PII | 90 days | Internal security team |
-| **Error Reports** | Anonymized | 30 days | Engineering team |
-
-## Security Monitoring
-
-### Real-Time Monitoring
-
-- **Transaction Anomalies**: Unusual patterns or amounts
-- **System Performance**: Response times and error rates
-- **Security Events**: Failed authentication, suspicious requests
-- **Network Health**: RPC endpoint status and blockchain state
-
-### Alerting Thresholds
-
-| Metric | Threshold | Response |
-|--------|-----------|----------|
-| **Failed Transactions** | >5% in 5 minutes | Automated investigation |
-| **API Errors** | >10% in 1 minute | Immediate escalation |
-| **Routing Delays** | >2 minutes average | Capacity scaling |
-| **Security Events** | Any critical event | Security team notification |
-
-## Future Security Enhancements
-
-### Planned Improvements
-
-<Steps>
-  <Step title="Hardware Security Modules">
-    Deploy HSMs for all production key material by Q3 2026
-  </Step>
-  <Step title="Zero-Knowledge Proofs">
-    Research ZK-based privacy enhancements for stronger anonymity
-  </Step>
-  <Step title="Formal Verification">
-    Mathematically prove correctness of critical components
-  </Step>
-  <Step title="Decentralized Routing">
-    Transition to decentralized routing network to eliminate single points of failure
-  </Step>
-</Steps>
-
-## Contact Security Team
-
-### Security Inquiries
-
-- **Email**: security@unipay.com
-- **PGP Key**: [Download public key](https://unipay.com/security.asc)
-- **Response Time**: 48 hours maximum
-- **Escalation**: For critical issues, mention "URGENT" in subject
-
-### Security Team
-
-- **Chief Security Officer**: Former Trail of Bits principal consultant
-- **Security Engineers**: 2 full-time engineers with blockchain security expertise
-- **External Advisors**: Ongoing relationships with top security firms
-
-<Note>
-We take security seriously and appreciate the community's help in keeping Unipay secure. All legitimate security reports are acknowledged and, when appropriate, rewarded through our bug bounty program.
-</Note>
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Privacy Model" icon="shield" href="/features/privacy">
-    Understand our privacy protections and limitations
-  </Card>
-  <Card title="Team Background" icon="users" href="/about/team">
-    Learn about our security and privacy expertise
+  <Card title="Keep Updated" icon="arrow-up">
+    Use latest wallet versions
   </Card>
 </CardGroup>

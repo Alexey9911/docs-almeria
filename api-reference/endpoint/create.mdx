@@ -1,4 +1,264 @@
 ---
-title: 'Create Plant'
-openapi: 'POST /plants'
+title: "Create Transaction"
+api: "POST https://api.unipay.com/v1/transactions"
+description: "Submit a transaction for processing with optional privacy protection"
 ---
+
+Submit transactions for send, swap, or payroll operations. Supports both wallet mode (direct signing) and private mode (privacy-enhanced routing).
+
+## Request Body
+
+<ParamField body="type" type="string" required>
+  Transaction type: `send`, `swap`, or `payroll`
+</ParamField>
+
+<ParamField body="quoteId" type="string" required>
+  Quote ID from the `/quote` endpoint
+</ParamField>
+
+<ParamField body="mode" type="string" default="wallet">
+  Execution mode: `wallet` or `private`
+</ParamField>
+
+<ParamField body="sender" type="string" required>
+  Sender wallet address (base58 encoded)
+</ParamField>
+
+<ParamField body="recipients" type="array" required>
+  Array of recipient objects
+  
+  <Expandable title="Recipient Object">
+    <ParamField body="address" type="string" required>
+      Recipient wallet address
+    </ParamField>
+    <ParamField body="amount" type="string" required>
+      Amount to send (string to preserve precision)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="signedTransaction" type="string">
+  Base64 encoded signed transaction (required for wallet mode)
+</ParamField>
+
+## Response
+
+<ResponseField name="transactionId" type="string">
+  Unique transaction identifier
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `pending`, `processing`, `completed`, or `failed`
+</ResponseField>
+
+<ResponseField name="mode" type="string">
+  Execution mode: `wallet` or `private`
+</ResponseField>
+
+<ResponseField name="signature" type="string">
+  Transaction signature (wallet mode only)
+</ResponseField>
+
+<ResponseField name="ephemeralAddress" type="string">
+  Deposit address for private mode transactions
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Transaction creation timestamp (ISO 8601)
+</ResponseField>
+
+<RequestExample>
+
+```bash Wallet Mode
+curl -X POST "https://api.unipay.com/v1/transactions" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "send",
+    "quoteId": "quote_1234567890abcdef",
+    "mode": "wallet",
+    "sender": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+    "recipients": [
+      {
+        "address": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        "amount": "100.0"
+      }
+    ],
+    "signedTransaction": "base64_encoded_signed_transaction"
+  }'
+```
+
+```bash Private Mode
+curl -X POST "https://api.unipay.com/v1/transactions" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "send",
+    "quoteId": "quote_1234567890abcdef", 
+    "mode": "private",
+    "sender": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+    "recipients": [
+      {
+        "address": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        "amount": "100.0"
+      }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const transaction = await fetch('https://api.unipay.com/v1/transactions', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    type: 'swap',
+    quoteId: 'quote_1234567890abcdef',
+    mode: 'private',
+    sender: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    recipients: [
+      {
+        address: '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
+        amount: '10.0'
+      }
+    ]
+  })
+});
+
+const result = await transaction.json();
+```
+
+```python Python
+import requests
+
+response = requests.post('https://api.unipay.com/v1/transactions',
+  headers={
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  json={
+    'type': 'payroll',
+    'quoteId': 'quote_1234567890abcdef',
+    'mode': 'wallet', 
+    'sender': '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+    'recipients': [
+      {'address': '9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM', 'amount': '500.0'},
+      {'address': '4xKLtg3CX98e97TXJSDpbD5jBkheTqA83TZRuJosgBsV', 'amount': '750.0'}
+    ],
+    'signedTransaction': 'base64_encoded_signed_transaction'
+  }
+)
+
+result = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Wallet Mode Response
+{
+  "transactionId": "tx_abcdef1234567890",
+  "status": "pending",
+  "mode": "wallet",
+  "signature": "5VERv8NMvQakCcXn7JQVpMhHkPfft9kTrYpo9wqtKn5VuoKXxU22odq5RKjgdK9AxAFHsqDsy4z5fhFYaKkPWrHRMbodGGBBRn7AoTokBjpByCqVu6r9Ac2LpzQcDwAoRQ",
+  "createdAt": "2026-04-22T12:30:00Z"
+}
+```
+
+```json Private Mode Response
+{
+  "transactionId": "tx_fedcba0987654321",
+  "status": "processing",
+  "mode": "private",
+  "ephemeralAddress": "4xKLtg3CX98e97TXJSDpbD5jBkheTqA83TZRuJosgBsV",
+  "createdAt": "2026-04-22T12:30:00Z"
+}
+```
+
+</ResponseExample>
+
+## Transaction Types
+
+### Send
+Direct token transfer to a single recipient:
+```json
+{
+  "type": "send",
+  "recipients": [
+    {"address": "...", "amount": "100.0"}
+  ]
+}
+```
+
+### Swap
+Token exchange (requires quote with different input/output assets):
+```json
+{
+  "type": "swap", 
+  "recipients": [
+    {"address": "your_address", "amount": "10.0"}
+  ]
+}
+```
+
+### Payroll
+Batch payments to multiple recipients:
+```json
+{
+  "type": "payroll",
+  "recipients": [
+    {"address": "employee1", "amount": "2500.0"},
+    {"address": "employee2", "amount": "3000.0"}
+  ]
+}
+```
+
+## Execution Modes
+
+### Wallet Mode
+- Requires `signedTransaction` in request body
+- Transaction is broadcast immediately
+- Returns transaction signature
+- Lower fees (network only)
+
+### Private Mode
+- No signed transaction required
+- Returns ephemeral deposit address
+- User sends funds to ephemeral address
+- Higher fees (network + routing)
+
+## Status Flow
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Transaction submitted, awaiting processing |
+| `processing` | Private mode: routing in progress |
+| `completed` | Transaction confirmed on-chain |
+| `failed` | Transaction failed or reverted |
+
+## Error Responses
+
+<ResponseField name="error.code" type="string">
+  Error code identifier
+</ResponseField>
+
+<ResponseField name="error.message" type="string">
+  Human-readable error message
+</ResponseField>
+
+<ResponseField name="error.details" type="object">
+  Additional error context
+</ResponseField>
+
+### Common Errors
+
+| Code | Description |
+|------|-------------|
+| `INVALID_QUOTE` | Quote expired or not found |
+| `INVALID_SIGNATURE` | Malformed signed transaction |
+| `INSUFFICIENT_BALANCE` | Not enough tokens for transaction |
+| `INVALID_RECIPIENT` | Malformed recipient address |
+| `ROUTING_UNAVAILABLE` | Private mode temporarily unavailable |

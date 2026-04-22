@@ -1,6 +1,6 @@
 ---
 title: "Roadmap"
-description: "Development roadmap and upcoming features for Unipay privacy infrastructure"
+description: "Development roadmap and upcoming features for Unipay"
 ---
 
 # Roadmap
@@ -25,27 +25,13 @@ Our development roadmap focuses on expanding privacy capabilities, improving use
 
 ### Enhanced Batch Processing
 
-<Check>
-Batch sizes beyond 12 recipients via transaction splitting and lookup tables
-</Check>
-
-**Technical Details:**
-- Implement Solana lookup tables for address compression
-- Split large payrolls across multiple transactions automatically
-- Maintain single-signature UX through transaction chaining
+Batch sizes beyond 12 recipients via transaction splitting and lookup tables. Implement Solana lookup tables for address compression. Split large payrolls across multiple transactions automatically. Maintain single-signature UX through transaction chaining.
 
 **Impact:** Support payrolls of 50+ recipients in wallet mode
 
 ### Deterministic Session Keys
 
-<Check>
-Session-key derivation from connected wallet signature, eliminating backup files
-</Check>
-
-**Technical Details:**
-- Derive session keys from wallet signature over standard message
-- Eliminate need for manual backup/restore workflow
-- Maintain same privacy properties with better UX
+Session-key derivation from connected wallet signature, eliminating backup files. Derive session keys from wallet signature over standard message. Eliminate need for manual backup/restore workflow.
 
 **Impact:** Simplified onboarding, no lost session keys
 
@@ -53,27 +39,13 @@ Session-key derivation from connected wallet signature, eliminating backup files
 
 ### Advanced Timing Obfuscation
 
-<Check>
-Sophisticated batching and delay randomization to resist timing analysis
-</Check>
-
-**Technical Details:**
-- Implement variable-size batching windows
-- Add decoy transactions to obscure real transaction timing
-- Introduce configurable delay preferences for users
+Sophisticated batching and delay randomization to resist timing analysis. Implement variable-size batching windows. Add decoy transactions to obscure real transaction timing.
 
 **Impact:** Stronger protection against timing correlation attacks
 
 ### Cross-Chain Privacy
 
-<Check>
-Extend graph-break privacy to Ethereum and other EVM chains
-</Check>
-
-**Technical Details:**
-- Deploy routing infrastructure on Ethereum mainnet
-- Support ETH, USDC, USDT cross-chain private transfers
-- Maintain same UX across different blockchain networks
+Extend graph-break privacy to Ethereum and other EVM chains. Deploy routing infrastructure on Ethereum mainnet. Support ETH, USDC, USDT cross-chain private transfers.
 
 **Impact:** Privacy for multi-chain users and cross-chain transactions
 
@@ -81,225 +53,50 @@ Extend graph-break privacy to Ethereum and other EVM chains
 
 ### SDK Release
 
-<Check>
-TypeScript SDK for third-party wallet and dApp integration
-</Check>
+TypeScript SDK for third-party wallet and dApp integration:
 
-**Features:**
 ```typescript
 import { UnipaySDK } from '@unipay/sdk';
 
 const unipay = new UnipaySDK({
-  network: 'mainnet-beta',
-  wallet: walletAdapter
+  apiKey: 'your-api-key',
+  network: 'mainnet-beta'
 });
 
-// Private send
 await unipay.send({
-  recipient: 'recipient_address',
+  recipient: 'address',
   amount: 100,
   asset: 'USDC',
   mode: 'private'
 });
-
-// Private swap
-await unipay.swap({
-  inputAsset: 'SOL',
-  outputAsset: 'USDC', 
-  amount: 10,
-  mode: 'private'
-});
 ```
 
-**Integration Partners:**
-- Phantom Wallet: Built-in privacy features
-- Solflare: Privacy toggle in send flow
-- Backpack: Integrated swap privacy
-- Jupiter: Privacy-enhanced aggregation
+**Integration Partners:** Phantom Wallet, Solflare, Backpack, Jupiter
 
 ### API Platform
 
-<Check>
-REST API for institutional and programmatic access
-</Check>
-
-**Endpoints:**
-- `/api/v1/quote` - Get privacy-enhanced swap quotes
-- `/api/v1/send` - Initiate private transfers
-- `/api/v1/batch` - Submit payroll batches
-- `/api/v1/status` - Track transaction status
-
-**Authentication:** API keys with rate limiting and usage analytics
+REST API for institutional and programmatic access. Endpoints for quotes, transactions, batch operations, and status tracking.
 
 ## Q1 2027 - Advanced Features
 
 ### Shielded Pool Integration
 
-<Check>
-Optional integration with production-grade Solana privacy primitives
-</Check>
+Optional integration with production-grade Solana privacy primitives. Conditional on Solana shielded pool reaching production readiness and regulatory clarity.
 
-**Conditional on:**
-- Solana shielded pool reaching production readiness
-- Regulatory clarity on privacy-preserving protocols
-- Community demand for cryptographic anonymity
-
-**Technical Approach:**
-- Hybrid model: graph-break for ease of use, shielded pools for maximum privacy
-- User choice between privacy levels
-- Seamless UX across different privacy modes
+**Technical Approach:** Hybrid model with user choice between privacy levels
 
 ### Compliance Tools
 
-<Check>
-Advanced compliance and reporting features for institutional users
-</Check>
+Advanced compliance and reporting features for institutional users. Automated transaction reporting, compliance dashboard, integration with accounting software.
 
-**Features:**
-- Automated transaction reporting
-- Compliance dashboard with audit trails
-- Integration with accounting software
-- Regulatory reporting templates
-
-**Target Users:**
-- Crypto-native businesses
-- DeFi protocols requiring privacy
-- Institutional treasury management
-
-## Q2 2027 - Ecosystem Expansion
-
-### Mobile Applications
-
-<Check>
-Native iOS and Android apps with full feature parity
-</Check>
-
-**Features:**
-- Mobile wallet integration (Phantom, Solflare mobile)
-- Push notifications for transaction status
-- Biometric authentication for session keys
-- Offline transaction preparation
-
-### DeFi Protocol Integration
-
-<Check>
-Privacy-enhanced interactions with major DeFi protocols
-</Check>
-
-**Integrations:**
-- **Lending**: Private collateral deposits and withdrawals
-- **Yield Farming**: Anonymous liquidity provision
-- **NFT Trading**: Private NFT purchases and sales
-- **Governance**: Anonymous voting and proposal submission
+**Target Users:** Crypto-native businesses, DeFi protocols, institutional treasury management
 
 ## Long-Term Vision (2027+)
 
 ### Decentralized Routing
 
-<Check>
-Transition from centralized routing layer to decentralized network
-</Check>
-
-**Technical Approach:**
-- Validator-operated routing nodes
-- Economic incentives for routing operators
-- Slashing conditions for malicious behavior
-- Gradual migration from centralized to decentralized
+Transition from centralized routing layer to decentralized network. Validator-operated routing nodes with economic incentives and slashing conditions.
 
 ### Zero-Knowledge Proofs
 
-<Check>
-Research and development of ZK-based privacy solutions
-</Check>
-
-**Research Areas:**
-- ZK-SNARKs for transaction privacy
-- Recursive proof systems for scalability
-- Integration with existing Solana infrastructure
-- Performance optimization for browser environments
-
-## Community Involvement
-
-### Open Source Contributions
-
-We're committed to open-sourcing components that benefit the broader ecosystem:
-
-| Component | Timeline | Status |
-|-----------|----------|--------|
-| **Privacy SDK** | Q4 2026 | In development |
-| **Routing Protocol** | Q1 2027 | Design phase |
-| **Mobile Libraries** | Q2 2027 | Research phase |
-
-### Research Partnerships
-
-Active collaborations with:
-- **Privacy & Scaling Explorations**: ZK research
-- **IC3 (Cornell)**: Academic privacy research  
-- **Trail of Bits**: Security methodology development
-- **Solana Foundation**: Core protocol enhancements
-
-## Funding & Sustainability
-
-### Current Funding
-
-- **Solana Foundation Grant**: $500K for core development
-- **Strategic Investors**: $2M seed round led by privacy-focused VCs
-- **Revenue**: Transaction fees from routing layer
-
-### Revenue Model
-
-- **Routing Fees**: Small percentage on private transactions
-- **API Access**: Tiered pricing for institutional users
-- **SDK Licensing**: Enterprise licenses for large integrations
-- **Consulting**: Privacy implementation consulting for protocols
-
-## Community Feedback
-
-We actively incorporate community feedback into our roadmap:
-
-### Recent Community Requests
-
-| Feature | Votes | Status |
-|---------|-------|--------|
-| Mobile app | 847 | Q2 2027 roadmap |
-| Ethereum support | 623 | Q3 2026 roadmap |
-| Larger batch sizes | 445 | Q2 2026 roadmap |
-| API access | 312 | Q4 2026 roadmap |
-
-### How to Influence the Roadmap
-
-- **Discord**: Join discussions in #feature-requests
-- **GitHub**: Submit issues and feature requests
-- **Community Calls**: Monthly roadmap review sessions
-- **Surveys**: Quarterly user priority surveys
-
-## Risk Factors
-
-### Technical Risks
-
-- **Solana Network Changes**: Core protocol updates may require adaptation
-- **Regulatory Changes**: Privacy regulations may impact feature development
-- **Security Vulnerabilities**: Discovered issues may delay releases
-- **Scalability Limits**: Network congestion may affect user experience
-
-### Mitigation Strategies
-
-- **Diversification**: Multi-chain approach reduces single-network risk
-- **Compliance**: Proactive engagement with regulators
-- **Security**: Continuous auditing and bug bounty programs
-- **Performance**: Multiple RPC providers and caching strategies
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Join Community" icon="discord" href="https://discord.gg/unipay">
-    Participate in roadmap discussions and feature voting
-  </Card>
-  <Card title="Security Details" icon="shield-check" href="/about/security">
-    Learn about our security practices and audit schedule
-  </Card>
-</CardGroup>
-
-<Note>
-This roadmap is subject to change based on technical feasibility, regulatory developments, and community feedback. We update it quarterly and announce major changes through our community channels.
-</Note>
+Research and development of ZK-based privacy solutions. ZK-SNARKs for transaction privacy, recursive proof systems for scalability.

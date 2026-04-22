@@ -1,4 +1,352 @@
 ---
-title: 'New Plant'
-openapi: 'WEBHOOK /plant/webhook'
+title: "Create Webhook"
+api: "POST https://api.unipay.com/v1/webhooks"
+description: "Register webhook endpoints to receive real-time transaction status updates"
 ---
+
+Register webhook endpoints to receive real-time notifications about transaction status changes. Webhooks are essential for tracking private mode transactions that may take 30-120 seconds to complete.
+
+## Request Body
+
+<ParamField body="url" type="string" required>
+  Your webhook endpoint URL (must be HTTPS)
+</ParamField>
+
+<ParamField body="events" type="array" required>
+  Array of event types to subscribe to:
+  - `transaction.pending`
+  - `transaction.confirmed`
+  - `transaction.completed`
+  - `transaction.failed`
+</ParamField>
+
+<ParamField body="secret" type="string">
+  Secret key for webhook signature verification (recommended)
+</ParamField>
+
+## Response
+
+<ResponseField name="webhookId" type="string">
+  Unique webhook identifier
+</ResponseField>
+
+<ResponseField name="url" type="string">
+  Your webhook endpoint URL
+</ResponseField>
+
+<ResponseField name="events" type="array">
+  Subscribed event types
+</ResponseField>
+
+<ResponseField name="createdAt" type="string">
+  Webhook creation timestamp (ISO 8601)
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl -X POST "https://api.unipay.com/v1/webhooks" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-app.com/webhooks/unipay",
+    "events": [
+      "transaction.completed",
+      "transaction.failed"
+    ],
+    "secret": "your-webhook-secret-key"
+  }'
+```
+
+```javascript JavaScript
+const webhook = await fetch('https://api.unipay.com/v1/webhooks', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    url: 'https://your-app.com/webhooks/unipay',
+    events: ['transaction.completed', 'transaction.failed'],
+    secret: 'your-webhook-secret-key'
+  })
+});
+
+const result = await webhook.json();
+```
+
+```python Python
+import requests
+
+response = requests.post('https://api.unipay.com/v1/webhooks',
+  headers={
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  json={
+    'url': 'https://your-app.com/webhooks/unipay',
+    'events': ['transaction.completed', 'transaction.failed'],
+    'secret': 'your-webhook-secret-key'
+  }
+)
+
+result = response.json()
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "webhookId": "wh_1234567890abcdef",
+  "url": "https://your-app.com/webhooks/unipay",
+  "events": [
+    "transaction.completed",
+    "transaction.failed"
+  ],
+  "createdAt": "2026-04-22T12:40:00Z"
+}
+```
+
+</ResponseExample>
+
+## Webhook Events
+
+### Event Types
+
+<CardGroup cols={2}>
+  <Card title="transaction.pending" icon="clock">
+    Transaction submitted to network
+  </Card>
+  <Card title="transaction.confirmed" icon="check-circle">
+    Transaction confirmed on-chain
+  </Card>
+  <Card title="transaction.completed" icon="circle-check">
+    Transaction fully processed (final state)
+  </Card>
+  <Card title="transaction.failed" icon="circle-x">
+    Transaction failed or reverted
+  </Card>
+</CardGroup>
+
+### Event Payload
+
+All webhook events include this payload structure:
+
+```json
+{
+  "event": "transaction.completed",
+  "transactionId": "tx_abcdef1234567890",
+  "timestamp": "2026-04-22T12:45:00Z",
+  "data": {
+    "transactionId": "tx_abcdef1234567890",
+    "status": "completed",
+    "mode": "private",
+    "type": "send",
+    "signature": "5VERv8NMvQakCcXn7JQVpMhHkPfft9kTrYpo9wqtKn5V...",
+    "blockTime": 1640995200,
+    "fee": "0.000005",
+    "recipients": [
+      {
+        "address": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
+        "amount": "100.0"
+      }
+    ]
+  }
+}
+```
+
+## Webhook Security
+
+### Signature Verification
+
+Webhooks include a signature header for verification:
+
+```http
+X-Unipay-Signature: sha256=a8b7c6d5e4f3g2h1...
+```
+
+**Verification Example:**
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhook(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+    
+  const receivedSignature = signature.replace('sha256=', '');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(expectedSignature, 'hex'),
+    Buffer.from(receivedSignature, 'hex')
+  );
+}
+
+// Usage
+const isValid = verifyWebhook(
+  req.body,
+  req.headers['x-unipay-signature'],
+  'your-webhook-secret-key'
+);
+```
+
+### Security Best Practices
+
+<Steps>
+  <Step title="Use HTTPS">
+    Webhook URLs must use HTTPS for security
+  </Step>
+  <Step title="Verify Signatures">
+    Always verify webhook signatures to prevent spoofing
+  </Step>
+  <Step title="Validate Payload">
+    Check that transaction IDs match your records
+  </Step>
+  <Step title="Idempotency">
+    Handle duplicate webhook deliveries gracefully
+  </Step>
+</Steps>
+
+## Webhook Endpoint Requirements
+
+### Response Requirements
+
+Your webhook endpoint must:
+- Respond with HTTP 200 status code
+- Respond within 10 seconds
+- Return any response body (ignored)
+
+```javascript
+// Express.js example
+app.post('/webhooks/unipay', (req, res) => {
+  const { event, transactionId, data } = req.body;
+  
+  // Verify signature
+  if (!verifyWebhook(req.body, req.headers['x-unipay-signature'], secret)) {
+    return res.status(401).send('Invalid signature');
+  }
+  
+  // Process webhook
+  console.log(`Transaction ${transactionId} is now ${data.status}`);
+  
+  // Respond with 200
+  res.status(200).send('OK');
+});
+```
+
+### Retry Policy
+
+Failed webhook deliveries are retried with exponential backoff:
+
+| Attempt | Delay | Total Time |
+|---------|-------|------------|
+| 1 | Immediate | 0s |
+| 2 | 1 minute | 1m |
+| 3 | 5 minutes | 6m |
+| 4 | 15 minutes | 21m |
+| 5 | 1 hour | 1h 21m |
+| 6 | 6 hours | 7h 21m |
+
+After 6 failed attempts, webhook delivery is abandoned.
+
+## Testing Webhooks
+
+### Webhook Testing Tool
+
+Use tools like ngrok for local development:
+
+```bash
+# Install ngrok
+npm install -g ngrok
+
+# Expose local server
+ngrok http 3000
+
+# Use the HTTPS URL for webhook registration
+# https://abc123.ngrok.io/webhooks/unipay
+```
+
+### Test Events
+
+You can trigger test webhook events:
+
+```bash
+curl -X POST "https://api.unipay.com/v1/webhooks/wh_1234567890abcdef/test" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"event": "transaction.completed"}'
+```
+
+## Managing Webhooks
+
+### List Webhooks
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://api.unipay.com/v1/webhooks
+```
+
+### Update Webhook
+
+```bash
+curl -X PUT "https://api.unipay.com/v1/webhooks/wh_1234567890abcdef" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "events": ["transaction.completed", "transaction.failed", "transaction.pending"]
+  }'
+```
+
+### Delete Webhook
+
+```bash
+curl -X DELETE "https://api.unipay.com/v1/webhooks/wh_1234567890abcdef" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Error Responses
+
+<ResponseField name="error.code" type="string">
+  Error code identifier
+</ResponseField>
+
+<ResponseField name="error.message" type="string">
+  Human-readable error message
+</ResponseField>
+
+<ResponseField name="error.details" type="object">
+  Additional error context
+</ResponseField>
+
+### Common Errors
+
+| Code | Description |
+|------|-------------|
+| `INVALID_URL` | Webhook URL is not valid HTTPS |
+| `INVALID_EVENTS` | Unknown event types specified |
+| `URL_UNREACHABLE` | Cannot reach webhook URL during validation |
+| `WEBHOOK_LIMIT_EXCEEDED` | Too many webhooks registered |
+
+## Rate Limits
+
+Webhook registration is subject to rate limits:
+
+| Tier | Webhooks | Registrations/Hour |
+|------|----------|-------------------|
+| **Free** | 3 | 10 |
+| **Pro** | 10 | 50 |
+| **Enterprise** | 50 | 200 |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Transaction Status" icon="magnifying-glass" href="/api-reference/endpoint/get">
+    Learn about transaction status polling as an alternative
+  </Card>
+  <Card title="API Introduction" icon="book" href="/api-reference/introduction">
+    Review authentication and rate limiting details
+  </Card>
+</CardGroup>

@@ -1,6 +1,6 @@
 ---
 title: "How It Works"
-description: "Technical overview of Unipay's privacy architecture, execution modes, and design principles"
+description: "Technical overview of Unipay's privacy architecture and design principles"
 ---
 
 # How It Works
@@ -38,18 +38,6 @@ const transaction = new Transaction().add(
     lamports: amount
   })
 );
-
-// SPL Token Transfer  
-const transaction = new Transaction().add(
-  createTransferCheckedInstruction(
-    sourceATA,
-    mint,
-    destinationATA, 
-    wallet.publicKey,
-    amount,
-    decimals
-  )
-);
 ```
 
 **Characteristics:**
@@ -60,29 +48,12 @@ const transaction = new Transaction().add(
 
 ### Private Mode
 
-Privacy-enhanced flow with routing layer:
-
-```mermaid
-graph LR
-    A[User Wallet] --> B[Ephemeral Address]
-    B --> C[Routing Layer]
-    C --> D[Recipient Address]
-    
-    style B fill:#f9f,stroke:#333,stroke-width:2px
-    style C fill:#bbf,stroke:#333,stroke-width:2px
-```
-
-**Process Flow:**
-1. Client requests ephemeral deposit address from routing layer
-2. User sends funds to ephemeral address
-3. Routing layer detects deposit and initiates output transaction
-4. Recipient receives funds from routing layer's address
-5. Direct link between user and recipient is broken
+Privacy-enhanced flow with routing layer. Client requests ephemeral deposit address from routing layer. User sends funds to ephemeral address. Routing layer detects deposit and initiates output transaction. Recipient receives funds from routing layer's address. Direct link between user and recipient is broken.
 
 ## Privacy Model
 
 <Warning>
-**Important Disclosure**: Unipay provides graph-break privacy, not cryptographic anonymity. The routing layer can link inputs to outputs if subpoenaed. This tradeoff is disclosed in-product for every private transaction.
+Unipay provides graph-break privacy, not cryptographic anonymity. The routing layer can link inputs to outputs if subpoenaed.
 </Warning>
 
 ### Threat Model
@@ -92,50 +63,17 @@ graph LR
 | Passive chain analysis | ✅ Full protection |
 | Competitor surveillance | ✅ Full protection |
 | Routing layer subpoena | ❌ Linkability recoverable |
-| Nation-state forensics | ❌ Not designed for this threat |
-
-### What We Protect Against
-
-- **Transaction graph analysis**: Direct links between addresses are broken
-- **Balance correlation**: Input and output amounts can be different (swaps)
-- **Timing analysis**: Transactions are batched and delayed randomly
-- **Address clustering**: Fresh addresses used for each transaction
-
-### What We Don't Protect Against
-
-- **Routing layer logs**: Service provider can link transactions if compelled
-- **Network-level surveillance**: IP addresses and browser fingerprints
-- **Endpoint analysis**: Large or unusual amounts may stand out
-- **Social engineering**: User operational security remains critical
+| Nation-state forensics | ❌ Not designed for this |
 
 ## Design Principles
 
 ### 1. Non-custodial by Default
-
-```typescript
-// All wallet interactions happen client-side
-const signedTransaction = await wallet.signTransaction(transaction);
-
-// Backend only proxies network calls
-const result = await fetch('/api/broadcast', {
-  method: 'POST',
-  body: JSON.stringify({ transaction: signedTransaction })
-});
-```
 
 The browser signs everything that touches the user's wallet. The backend proxies network calls and never holds funds.
 
 ### 2. Stateless Services
 
 Every HTTP endpoint is stateless; rebooting the server loses no user state. The client is the source of truth.
-
-```typescript
-// No server-side sessions
-const status = await checkTransactionStatus(transactionId);
-
-// All state lives in the browser
-const sessionKey = localStorage.getItem('unipay_session_key_v1');
-```
 
 ### 3. Disclosed Tradeoffs
 
@@ -148,46 +86,3 @@ Connect a standard Solana wallet, enter an address, press Continue. Nothing else
 ### 5. Failure is Loud
 
 Quote failures, RPC errors, and routing errors surface on the same screen that caused them, with the machine-readable code shown below the human-readable message.
-
-## Technical Specifications
-
-### Supported Assets
-
-| Asset | Wallet Mode | Private Mode | Program |
-|-------|-------------|--------------|---------|
-| SOL | ✅ | ✅ | SystemProgram |
-| USDC | ✅ | ✅ | Token Program |
-| USDT | ✅ | ✅ | Token Program |
-| Token-2022 | ✅ Balance only | ❌ | Token-2022 Program |
-
-### Transaction Limits
-
-| Operation | Wallet Mode | Private Mode |
-|-----------|-------------|--------------|
-| Send | No limit | Routing layer minimum |
-| Swap | No limit | Routing layer minimum |
-| Payroll | 12 recipients max | No batch limit |
-
-### RPC Configuration
-
-```typescript
-// Default endpoint
-const RPC_ENDPOINT = process.env.NEXT_PUBLIC_SOLANA_RPC || 
-                    'https://api.mainnet-beta.solana.com';
-
-// Solana Labs endpoint is blocked client-side
-if (RPC_ENDPOINT.includes('api.mainnet-beta.solana.com')) {
-  throw new Error('Public endpoint blocked for reliability');
-}
-```
-
-## Next Steps
-
-<CardGroup cols={2}>
-  <Card title="Explore Features" icon="compass" href="/features/send">
-    Learn about Send, Swap, and Payroll capabilities
-  </Card>
-  <Card title="Security Details" icon="shield-check" href="/about/security">
-    Deep dive into our security model and audit reports
-  </Card>
-</CardGroup>
