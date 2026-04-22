@@ -1,25 +1,25 @@
 ---
 title: "How It Works"
-description: "Technical overview of Unipay's privacy architecture and design principles"
+description: "Technical overview of Unipay's privacy architecture"
 ---
 
 # How It Works
 
 Unipay provides privacy for Solana transactions through a graph-break primitive that separates the on-chain link between sender and recipient addresses.
 
-## Architecture Overview
+## Architecture
 
 <Steps>
   <Step title="Client Layer">
-    React-based web application that handles wallet connections, transaction construction, and user interface. Runs entirely in the browser with no server-side state.
+    React-based web application. Runs entirely in the browser with no server-side state.
   </Step>
   
   <Step title="Routing Layer">
-    Stateless HTTP services that provide ephemeral deposit addresses and coordinate private transactions. Never holds user funds or maintains persistent state.
+    Stateless HTTP services that provide ephemeral deposit addresses. Never holds user funds.
   </Step>
   
   <Step title="On-Chain Integration">
-    Direct integration with Solana programs including SystemProgram for SOL transfers, Token Program for SPL tokens, and liquidity aggregators for swaps.
+    Direct integration with Solana programs: SystemProgram, Token Program, and liquidity aggregators.
   </Step>
 </Steps>
 
@@ -30,7 +30,6 @@ Unipay provides privacy for Solana transactions through a graph-break primitive 
 Standard Solana transaction flow with local signing:
 
 ```typescript
-// SOL Transfer
 const transaction = new Transaction().add(
   SystemProgram.transfer({
     fromPubkey: wallet.publicKey,
@@ -44,11 +43,10 @@ const transaction = new Transaction().add(
 - Direct on-chain transaction
 - Single signature required
 - Immediate execution
-- Full transaction history visible on-chain
 
 ### Private Mode
 
-Privacy-enhanced flow with routing layer. Client requests ephemeral deposit address from routing layer. User sends funds to ephemeral address. Routing layer detects deposit and initiates output transaction. Recipient receives funds from routing layer's address. Direct link between user and recipient is broken.
+Privacy-enhanced flow with routing layer. Client requests ephemeral deposit address. User sends funds to ephemeral address. Routing layer detects deposit and initiates output. Recipient receives funds from routing layer's address.
 
 ## Privacy Model
 
@@ -56,33 +54,17 @@ Privacy-enhanced flow with routing layer. Client requests ephemeral deposit addr
 Unipay provides graph-break privacy, not cryptographic anonymity. The routing layer can link inputs to outputs if subpoenaed.
 </Warning>
 
-### Threat Model
-
 | Adversary Type | Protection Level |
 |----------------|------------------|
-| Passive chain analysis | ✅ Full protection |
-| Competitor surveillance | ✅ Full protection |
-| Routing layer subpoena | ❌ Linkability recoverable |
-| Nation-state forensics | ❌ Not designed for this |
+| Passive chain analysis | ✅ Full |
+| Competitor surveillance | ✅ Full |
+| Routing layer subpoena | ❌ Linkable |
+| Nation-state forensics | ❌ Not designed |
 
 ## Design Principles
 
-### 1. Non-custodial by Default
-
-The browser signs everything that touches the user's wallet. The backend proxies network calls and never holds funds.
-
-### 2. Stateless Services
-
-Every HTTP endpoint is stateless; rebooting the server loses no user state. The client is the source of truth.
-
-### 3. Disclosed Tradeoffs
-
-Every Private flow shows the privacy model in the same modal where the deposit address is shown. No hidden assumptions.
-
-### 4. Zero Config to First Transaction
-
-Connect a standard Solana wallet, enter an address, press Continue. Nothing else is required.
-
-### 5. Failure is Loud
-
-Quote failures, RPC errors, and routing errors surface on the same screen that caused them, with the machine-readable code shown below the human-readable message.
+1. **Non-custodial by Default** - Browser signs everything
+2. **Stateless Services** - No user state on servers
+3. **Disclosed Tradeoffs** - Privacy model shown in-product
+4. **Zero Config** - Connect wallet and start
+5. **Failure is Loud** - Errors surface immediately

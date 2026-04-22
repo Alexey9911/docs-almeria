@@ -1,0 +1,87 @@
+---
+title: "Get Balance"
+api: "GET https://api.unipay.com/v1/balances/{address}"
+description: "Get SOL and token balances for a wallet address"
+---
+
+# Get Balance
+
+Retrieve SOL and SPL token balances for any Solana wallet address.
+
+## Path Parameters
+
+<ParamField path="address" type="string" required>
+  Solana wallet address (base58 encoded)
+</ParamField>
+
+## Response
+
+<ResponseField name="address" type="string">
+  Wallet address
+</ResponseField>
+
+<ResponseField name="sol" type="string">
+  SOL balance
+</ResponseField>
+
+<ResponseField name="tokens" type="array">
+  Array of token balances
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.unipay.com/v1/balances/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const balance = await fetch(
+  'https://api.unipay.com/v1/balances/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+  { headers: { 'Authorization': 'Bearer YOUR_API_KEY' } }
+);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+  'https://api.unipay.com/v1/balances/7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU',
+  headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "address": "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+  "sol": "5.234",
+  "tokens": [
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "symbol": "USDC",
+      "balance": "1250.50",
+      "decimals": 6
+    },
+    {
+      "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      "symbol": "USDT",
+      "balance": "500.00",
+      "decimals": 6
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Supported Tokens
+
+The API returns balances for:
+- SOL (native token)
+- USDC
+- USDT
+- All Token-2022 mints (for display only)

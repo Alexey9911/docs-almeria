@@ -1,0 +1,71 @@
+---
+title: "Transaction History"
+api: "GET https://api.unipay.com/v1/transactions"
+description: "List all transactions for your account"
+---
+
+# Transaction History
+
+Retrieve a paginated list of all transactions.
+
+## Query Parameters
+
+<ParamField query="limit" type="integer" default="20">
+  Number of transactions to return (max 100)
+</ParamField>
+
+<ParamField query="offset" type="integer" default="0">
+  Number of transactions to skip
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by status: `pending`, `completed`, `failed`
+</ParamField>
+
+## Response
+
+<ResponseField name="transactions" type="array">
+  Array of transaction objects
+</ResponseField>
+
+<ResponseField name="total" type="integer">
+  Total number of transactions
+</ResponseField>
+
+<ResponseField name="hasMore" type="boolean">
+  Whether more transactions exist
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.unipay.com/v1/transactions?limit=10&status=completed" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const history = await fetch(
+  'https://api.unipay.com/v1/transactions?limit=10',
+  { headers: { 'Authorization': 'Bearer YOUR_API_KEY' } }
+);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "transactions": [
+    {
+      "transactionId": "tx_123",
+      "status": "completed",
+      "createdAt": "2026-04-22T12:00:00Z"
+    }
+  ],
+  "total": 45,
+  "hasMore": true
+}
+```
+
+</ResponseExample>

@@ -5,7 +5,7 @@ description: "Security practices, audit reports, and responsible disclosure poli
 
 # Security
 
-Security is fundamental to everything we build. We treat user funds as uninsured and design systems accordingly, with multiple layers of protection and continuous monitoring.
+Security is fundamental to everything we build. We treat user funds as uninsured and design systems accordingly.
 
 ## Security Model
 
@@ -24,128 +24,81 @@ Security is fundamental to everything we build. We treat user funds as uninsured
   </Card>
 </CardGroup>
 
-## Architecture Security
-
-### Client-Side Security
+## Client-Side Security
 
 All sensitive operations happen in your browser:
 
 ```typescript
 // Private keys never leave the browser
-const transaction = new Transaction().add(instruction);
 const signedTransaction = await wallet.signTransaction(transaction);
 
-// Only signed transactions are sent to our services
-const result = await fetch('/api/broadcast', {
-  method: 'POST',
-  body: JSON.stringify({ 
-    signedTransaction: signedTransaction.serialize() 
-  })
+// Only signed transactions sent to services
+await fetch('/api/broadcast', {
+  body: JSON.stringify({ signedTransaction })
 });
 ```
 
 **Security Properties:**
-- Private keys remain in wallet browser extension
-- Transactions are signed locally before transmission
-- Our services only see signed, committed transactions
-- No ability to access or move user funds
+- Private keys remain in wallet extension
+- Transactions signed locally
+- Services only see signed transactions
+- No ability to access user funds
 
-### Routing Layer Security
+## Routing Layer Security
 
 <Steps>
   <Step title="Ephemeral Addresses">
-    Each transaction uses a fresh, single-use deposit address generated with cryptographically secure randomness.
+    Fresh, single-use deposit addresses with cryptographically secure randomness
   </Step>
-  <Step title="Time-Limited Operations">
-    Deposit addresses expire after 24 hours. Funds sent to expired addresses are automatically refunded.
+  <Step title="Time-Limited">
+    Addresses expire after 24 hours with automatic refunds
   </Step>
   <Step title="Atomic Processing">
-    Routing operations complete atomically or fail completely. No partial states or stuck funds.
+    Operations complete atomically or fail completely
   </Step>
-  <Step title="Monitoring & Alerts">
-    Real-time monitoring of all routing operations with automated alerting for anomalies.
+  <Step title="Monitoring">
+    Real-time monitoring with automated alerting
   </Step>
 </Steps>
 
 ## Audit Reports
 
-We work with leading security firms to validate our implementations:
-
 ### Trail of Bits (March 2026)
 
 **Scope:** Smart contract architecture and client-side security  
-**Duration:** 4 weeks  
-**Findings:** 2 medium, 5 low severity issues (all resolved)
-
-**Key Recommendations Implemented:**
-- Enhanced input validation for transaction construction
-- Improved error handling for edge cases
-- Additional client-side security headers
+**Findings:** 2 medium, 5 low severity (all resolved)
 
 ### Kudelski Security (January 2026)
 
 **Scope:** Cryptographic implementation and privacy model  
-**Duration:** 3 weeks  
-**Findings:** 1 medium, 3 low severity issues (all resolved)
-
-**Key Recommendations Implemented:**
-- Strengthened ephemeral address generation
-- Enhanced session key derivation
-- Improved timing attack resistance
+**Findings:** 1 medium, 3 low severity (all resolved)
 
 ## Bug Bounty Program
 
-We maintain an active bug bounty program to incentivize security research:
-
-### Rewards
-
-| Severity | Reward Range | Examples |
-|----------|--------------|----------|
-| **Critical** | $10,000 - $50,000 | Fund theft, private key extraction |
-| **High** | $5,000 - $15,000 | Transaction manipulation, privacy bypass |
-| **Medium** | $1,000 - $5,000 | Information disclosure, DoS |
-| **Low** | $100 - $1,000 | Minor information leaks |
+| Severity | Reward Range |
+|----------|--------------|
+| **Critical** | $10,000 - $50,000 |
+| **High** | $5,000 - $15,000 |
+| **Medium** | $1,000 - $5,000 |
+| **Low** | $100 - $1,000 |
 
 ### How to Report
 
 1. **Email**: security@unipay.com
-2. **Include**: Detailed reproduction steps and impact assessment
-3. **Response**: We respond within 48 hours on business days
-4. **Timeline**: 90 days for resolution before public disclosure
-
-## Responsible Disclosure
-
-<Steps>
-  <Step title="Initial Report">
-    Researcher reports vulnerability via security@unipay.com
-  </Step>
-  <Step title="Acknowledgment">
-    We acknowledge receipt within 48 hours and begin investigation
-  </Step>
-  <Step title="Assessment">
-    We assess severity and develop fix timeline (typically 30-90 days)
-  </Step>
-  <Step title="Resolution">
-    We deploy fix and notify researcher of resolution
-  </Step>
-  <Step title="Disclosure">
-    Public disclosure after fix deployment (with researcher credit)
-  </Step>
-</Steps>
+2. **Response**: Within 48 hours
+3. **Timeline**: 90 days for resolution
 
 ## Best Practices
-
-### For Users
 
 <CardGroup cols={2}>
   <Card title="Wallet Security" icon="wallet">
     Use hardware wallets when possible
   </Card>
   <Card title="Verify Addresses" icon="magnifying-glass">
-    Always double-check recipient addresses
+    Always double-check recipients
   </Card>
   <Card title="Monitor Transactions" icon="eye">
-    Track transaction status on Solscan
+    Track status on Solscan
   </Card>
   <Card title="Keep Updated" icon="arrow-up">
     Use latest wallet versions

@@ -5,7 +5,7 @@ description: "Get started with Unipay in under 2 minutes"
 
 # Quick Start
 
-Get up and running with Unipay in under 2 minutes. No account creation, no KYC, no deposits required.
+Get up and running with Unipay in under 2 minutes. No account, no KYC, no deposits.
 
 ## Prerequisites
 
@@ -18,68 +18,65 @@ Get up and running with Unipay in under 2 minutes. No account creation, no KYC, 
   </Card>
 </CardGroup>
 
-## Your First Private Transaction
+## Your First Transaction
 
 <Steps>
-  <Step title="Connect Your Wallet">
-    Visit [app.unipay.com](https://app.unipay.com) and connect your Solana wallet. We support all major wallets including hardware wallets via their respective adapters.
+  <Step title="Connect Wallet">
+    Visit [app.unipay.com](https://app.unipay.com) and connect your Solana wallet
   </Step>
   
-  <Step title="Choose Your Flow">
-    Select from three main features:
-    - **Send**: Transfer tokens privately to another address
-    - **Swap**: Exchange SOL for USDC/USDT anonymously  
-    - **Payroll**: Batch payments to multiple recipients
+  <Step title="Choose Flow">
+    - **Send**: Transfer tokens privately
+    - **Swap**: Exchange SOL for USDC/USDT  
+    - **Payroll**: Batch payments
   </Step>
   
-  <Step title="Select Privacy Mode">
-    Choose between two execution modes:
-    - **Wallet Mode**: Direct transaction, signed locally
-    - **Private Mode**: Graph-break privacy via routing layer
+  <Step title="Select Mode">
+    - **Wallet Mode**: Direct transaction
+    - **Private Mode**: Graph-break privacy
   </Step>
   
-  <Step title="Execute Transaction">
-    Review the details and confirm. In Private mode, you'll receive an ephemeral deposit address and can track progress through our live status stepper.
+  <Step title="Execute">
+    Review and confirm. Track progress in real-time.
   </Step>
 </Steps>
 
 ## Example: Private Send
 
 ```bash
-# 1. Connect wallet (browser UI)
-# 2. Select "Send" 
-# 3. Choose "Private Mode"
-# 4. Enter recipient address
-# 5. Amount: 1 USDC
-# 6. Confirm transaction
+# 1. Connect wallet
+# 2. Select "Send" → "Private Mode"
+# 3. Enter recipient address
+# 4. Amount: 1 USDC
+# 5. Confirm
 ```
 
 <Note>
-Private mode transactions go through these stages: waiting → confirming → exchanging → sending → finished. Each stage is polled every 6 seconds.
+Private transactions: waiting → confirming → exchanging → sending → finished
 </Note>
 
 ## Wallet Compatibility
 
-| Wallet | Status | Hardware Support |
-|--------|--------|------------------|
+| Wallet | Status | Hardware |
+|--------|--------|----------|
 | Phantom | ✅ Full | ✅ Via adapter |
 | Solflare | ✅ Full | ✅ Via adapter |
-| Backpack | ✅ Full | ❌ Not applicable |
+| Backpack | ✅ Full | ❌ N/A |
 | Ledger | ✅ Via Solflare | ✅ Native |
 
 ## What's Next?
 
 <CardGroup cols={2}>
   <Card title="Learn Features" icon="book" href="/features/send">
-    Explore all available features
+    Explore all features
   </Card>
-  <Card title="Understand Privacy" icon="shield" href="/features/privacy">
-    Learn about our privacy model
+  <Card title="Privacy Model" icon="shield" href="/features/privacy">
+    Understand privacy
   </Card>
-  <Card title="View Roadmap" icon="map" href="/about/roadmap">
-    See what's coming next
+  <Card title="How It Works" icon="gear" href="/how-it-works">
+    Technical details
   </Card>
   <Card title="Join Community" icon="discord" href="https://discord.gg/unipay">
-    Connect with other users
+    Get support
   </Card>
 </CardGroup>

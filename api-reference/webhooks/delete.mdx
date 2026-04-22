@@ -1,0 +1,42 @@
+---
+title: "Delete Webhook"
+api: "DELETE https://api.unipay.com/v1/webhooks/{webhookId}"
+description: "Remove a webhook"
+---
+
+# Delete Webhook
+
+Permanently delete a webhook. This action cannot be undone.
+
+## Path Parameters
+
+<ParamField path="webhookId" type="string" required>
+  Webhook ID to delete
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl -X DELETE "https://api.unipay.com/v1/webhooks/wh_123" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+await fetch('https://api.unipay.com/v1/webhooks/wh_123', {
+  method: 'DELETE',
+  headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+});
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "webhookId": "wh_123",
+  "deleted": true
+}
+```
+
+</ResponseExample>

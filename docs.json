@@ -42,7 +42,6 @@
             "group": "About",
             "pages": [
               "about/team",
-              "about/roadmap",
               "about/security"
             ]
           },
@@ -59,18 +58,43 @@
         "tab": "API Reference",
         "groups": [
           {
-            "group": "API Documentation",
+            "group": "Getting Started",
             "pages": [
-              "api-reference/introduction"
+              "api-reference/introduction",
+              "api-reference/authentication",
+              "api-reference/errors"
             ]
           },
           {
-            "group": "Endpoints",
+            "group": "Quotes",
             "pages": [
               "api-reference/endpoint/get",
+              "api-reference/quotes/refresh"
+            ]
+          },
+          {
+            "group": "Transactions",
+            "pages": [
               "api-reference/endpoint/create",
+              "api-reference/transactions/status",
               "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "api-reference/transactions/history"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/endpoint/webhook",
+              "api-reference/webhooks/list",
+              "api-reference/webhooks/update",
+              "api-reference/webhooks/delete"
+            ]
+          },
+          {
+            "group": "Balances",
+            "pages": [
+              "api-reference/balances/get",
+              "api-reference/balances/tokens"
             ]
           }
         ]
@@ -79,9 +103,9 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Launch App",
-          "icon": "rocket",
-          "href": "https://app.unipay.com"
+          "anchor": "Website",
+          "icon": "globe",
+          "href": "https://unipay.com"
         },
         {
           "anchor": "GitHub",
@@ -89,23 +113,17 @@
           "href": "https://github.com/unipay"
         },
         {
-          "anchor": "Discord",
-          "icon": "discord",
-          "href": "https://discord.gg/unipay"
+          "anchor": "Twitter",
+          "icon": "twitter",
+          "href": "https://twitter.com/unipay"
         }
       ]
     }
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Security",
-        "href": "mailto:security@unipay.com"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Launch App",
+      "label": "Try Unipay",
       "href": "https://app.unipay.com"
     }
   },

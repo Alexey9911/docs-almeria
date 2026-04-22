@@ -5,7 +5,7 @@ description: "Understanding Unipay's graph-break privacy and threat model"
 
 # Privacy Model
 
-Unipay provides graph-break privacy for Solana transactions, not cryptographic anonymity. Understanding this distinction is crucial for proper threat modeling and operational security.
+Unipay provides graph-break privacy for Solana transactions, not cryptographic anonymity. Understanding this distinction is crucial for proper threat modeling.
 
 ## What We Protect Against
 
@@ -27,7 +27,7 @@ Unipay provides graph-break privacy for Solana transactions, not cryptographic a
 ## What We Don't Protect Against
 
 <Warning>
-Unipay is not designed for nation-state level privacy or cryptographic anonymity. The routing layer can recover transaction linkability if compelled by legal process.
+Unipay is not designed for nation-state level privacy. The routing layer can recover transaction linkability if compelled by legal process.
 </Warning>
 
 | Threat Vector | Protection Level |
@@ -39,56 +39,33 @@ Unipay is not designed for nation-state level privacy or cryptographic anonymity
 
 ## Privacy Architecture
 
-### Graph-Break Primitive
-
 **Without Privacy (Wallet Mode):**
 - Direct on-chain link: `Your Address → Recipient Address`
-- Transaction graph clearly shows relationship
 
 **With Privacy (Private Mode):**
 - Broken link: `Your Address → Ephemeral → Routing → Recipient`
-- No direct on-chain connection between you and recipient
 
-### Ephemeral Address System
+### Ephemeral Addresses
 
-Each private transaction uses a unique ephemeral address:
+Each private transaction uses a unique ephemeral address that is single-use, unpredictable, temporary, and unlinkable to previous or future addresses.
 
-```typescript
-// Fresh address for each transaction
-const ephemeralAddress = await routingLayer.generateEphemeralAddress({
-  outputAsset: 'USDC',
-  outputAddress: recipientAddress,
-  sessionId: generateSessionId()
-});
-```
-
-**Properties:**
-- **Single-use**: Each address used for exactly one transaction
-- **Unpredictable**: Generated using cryptographically secure randomness
-- **Temporary**: Discarded after transaction completion
-- **Unlinkable**: No connection to previous or future addresses
-
-## Threat Model Analysis
+## Threat Model
 
 | User Type | Primary Threats | Unipay Protection |
 |-----------|----------------|-------------------|
-| **Freelancer** | Client payment tracking | ✅ Full protection |
-| **Small Business** | Competitor analysis | ✅ Full protection |
-| **Trader** | Portfolio surveillance | ✅ Full protection |
+| **Freelancer** | Client payment tracking | ✅ Full |
+| **Small Business** | Competitor analysis | ✅ Full |
+| **Trader** | Portfolio surveillance | ✅ Full |
 | **Privacy Advocate** | General surveillance | ⚠️ Partial |
 | **Whistleblower** | Nation-state tracking | ❌ Insufficient |
 
-## Operational Security
-
-### Best Practices
+## Best Practices
 
 - Use different networks when possible
 - Vary transaction timing
 - Mix transaction sizes
 - Rotate session keys regularly
 
-### What Not To Do
-
 <Warning>
-Avoid using the same amounts repeatedly, transacting at predictable times, or connecting from the same IP address always.
+Avoid using the same amounts repeatedly or transacting at predictable times.
 </Warning>

@@ -1,212 +1,214 @@
-/* Custom styles for Unipay documentation */
+/* Unipay Documentation Styles - Clean and Simple */
 
-/* Dark background override */
-:root[data-theme="dark"] {
-  --background: #000000 !important;
-  --background-secondary: #111111 !important;
-  --sidebar-background: #000000 !important;
-  --sidebar-hover: #8B5CF6 !important;
-  --sidebar-hover-bg: rgba(139, 92, 246, 0.1) !important;
-}
+/* ============================================
+   THEME BACKGROUNDS
+   ============================================ */
 
-/* Force dark background */
-html, body {
-  background-color: #000000 !important;
-}
-
+/* Dark theme */
 [data-theme="dark"] {
   background-color: #000000 !important;
 }
 
-/* Main container */
-.main-container,
-.content-container,
-.docs-container {
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] .main-container {
   background-color: #000000 !important;
 }
 
-/* Sidebar styling */
-.sidebar,
-nav[aria-label="Sidebar"],
-.navigation-sidebar {
+/* Light theme */
+[data-theme="light"] {
+  background-color: #FFFFFF !important;
+}
+
+[data-theme="light"] body,
+[data-theme="light"] main,
+[data-theme="light"] .main-container {
+  background-color: #FFFFFF !important;
+}
+
+/* ============================================
+   SIDEBAR STYLES
+   ============================================ */
+
+/* Sidebar background - Dark theme */
+[data-theme="dark"] aside,
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] nav[aria-label="Sidebar"] {
   background-color: #000000 !important;
   border-right: 1px solid #333333 !important;
 }
 
-/* Sidebar navigation items - default white text */
-.sidebar a,
-.sidebar button,
-nav[aria-label="Sidebar"] a,
-nav[aria-label="Sidebar"] button,
-.navigation-item {
+/* Sidebar background - Light theme */
+[data-theme="light"] aside,
+[data-theme="light"] .sidebar,
+[data-theme="light"] nav[aria-label="Sidebar"] {
+  background-color: #FFFFFF !important;
+  border-right: 1px solid #E5E7EB !important;
+}
+
+/* ============================================
+   SIDEBAR LINKS - DEFAULT STATE
+   ============================================ */
+
+/* Dark theme - WHITE text by default */
+[data-theme="dark"] aside a,
+[data-theme="dark"] aside button,
+[data-theme="dark"] .sidebar a,
+[data-theme="dark"] .sidebar button,
+[data-theme="dark"] nav[aria-label="Sidebar"] a,
+[data-theme="dark"] nav[aria-label="Sidebar"] button {
   color: #FFFFFF !important;
 }
 
-/* Sidebar navigation items hover effect - purple background and text */
-.sidebar a:hover,
-.sidebar button:hover,
-nav[aria-label="Sidebar"] a:hover,
-nav[aria-label="Sidebar"] button:hover,
-.navigation-item:hover {
-  background-color: rgba(139, 92, 246, 0.1) !important;
-  color: #8B5CF6 !important;
-  border-radius: 6px !important;
-  transition: all 0.2s ease !important;
+/* Light theme - DARK text by default */
+[data-theme="light"] aside a,
+[data-theme="light"] aside button,
+[data-theme="light"] .sidebar a,
+[data-theme="light"] .sidebar button,
+[data-theme="light"] nav[aria-label="Sidebar"] a,
+[data-theme="light"] nav[aria-label="Sidebar"] button {
+  color: #1F2937 !important;
 }
 
-/* Active sidebar item */
-.sidebar a[aria-current="page"],
-.sidebar button[aria-current="page"],
-nav[aria-label="Sidebar"] a[aria-current="page"],
-.navigation-item[aria-current="page"] {
-  background-color: rgba(139, 92, 246, 0.2) !important;
-  color: #A78BFA !important;
+/* ============================================
+   SIDEBAR LINKS - HOVER STATE
+   ============================================ */
+
+/* PURPLE text on hover - both themes */
+[data-theme="dark"] aside a:hover,
+[data-theme="dark"] aside button:hover,
+[data-theme="dark"] .sidebar a:hover,
+[data-theme="dark"] .sidebar button:hover,
+[data-theme="dark"] nav[aria-label="Sidebar"] a:hover,
+[data-theme="dark"] nav[aria-label="Sidebar"] button:hover,
+[data-theme="light"] aside a:hover,
+[data-theme="light"] aside button:hover,
+[data-theme="light"] .sidebar a:hover,
+[data-theme="light"] .sidebar button:hover,
+[data-theme="light"] nav[aria-label="Sidebar"] a:hover,
+[data-theme="light"] nav[aria-label="Sidebar"] button:hover {
+  color: #8B5CF6 !important;
+  background-color: rgba(139, 92, 246, 0.1) !important;
+  border-radius: 6px !important;
+}
+
+/* ============================================
+   SIDEBAR LINKS - ACTIVE STATE
+   ============================================ */
+
+/* PURPLE text for active page - both themes */
+[data-theme="dark"] aside a[aria-current="page"],
+[data-theme="dark"] aside button[aria-current="page"],
+[data-theme="dark"] .sidebar a[aria-current="page"],
+[data-theme="dark"] .sidebar button[aria-current="page"],
+[data-theme="dark"] nav[aria-label="Sidebar"] a[aria-current="page"],
+[data-theme="dark"] nav[aria-label="Sidebar"] button[aria-current="page"],
+[data-theme="light"] aside a[aria-current="page"],
+[data-theme="light"] aside button[aria-current="page"],
+[data-theme="light"] .sidebar a[aria-current="page"],
+[data-theme="light"] .sidebar button[aria-current="page"],
+[data-theme="light"] nav[aria-label="Sidebar"] a[aria-current="page"],
+[data-theme="light"] nav[aria-label="Sidebar"] button[aria-current="page"] {
+  color: #8B5CF6 !important;
+  background-color: rgba(139, 92, 246, 0.15) !important;
   border-left: 3px solid #8B5CF6 !important;
 }
 
-/* Sidebar group headers */
-.sidebar h3,
-.sidebar .group-header,
-nav[aria-label="Sidebar"] h3,
-.navigation-group-title {
+/* ============================================
+   SIDEBAR GROUP HEADERS
+   ============================================ */
+
+[data-theme="dark"] aside h3,
+[data-theme="dark"] .sidebar h3,
+[data-theme="dark"] nav[aria-label="Sidebar"] h3,
+[data-theme="light"] aside h3,
+[data-theme="light"] .sidebar h3,
+[data-theme="light"] nav[aria-label="Sidebar"] h3 {
   color: #8B5CF6 !important;
   font-weight: 600 !important;
 }
 
-/* Main content area */
-.main-content,
-.content-wrapper,
-main {
-  background-color: #000000 !important;
-}
+/* ============================================
+   CODE BLOCKS
+   ============================================ */
 
-/* Code blocks dark theme enhancement */
-pre,
-code {
+/* Dark theme */
+[data-theme="dark"] pre,
+[data-theme="dark"] code {
   background-color: #111111 !important;
   border: 1px solid #333333 !important;
 }
 
-/* Cards hover effect */
-.card:hover,
-[class*="card"]:hover {
+/* Light theme */
+[data-theme="light"] pre,
+[data-theme="light"] code {
+  background-color: #F9FAFB !important;
+  border: 1px solid #E5E7EB !important;
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+
+.card:hover {
   border-color: #8B5CF6 !important;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15) !important;
   transform: translateY(-2px) !important;
   transition: all 0.3s ease !important;
 }
 
-/* Navigation tabs */
-.tab-button:hover,
-[role="tab"]:hover {
-  color: #8B5CF6 !important;
-}
+/* ============================================
+   BUTTONS
+   ============================================ */
 
-.tab-button.active,
-[role="tab"][aria-selected="true"] {
-  color: #A78BFA !important;
-  border-bottom-color: #8B5CF6 !important;
-}
-
-/* Search bar */
-.search-input:focus,
-input[type="search"]:focus {
-  border-color: #8B5CF6 !important;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2) !important;
-}
-
-/* Buttons */
-.btn-primary,
-button[data-variant="primary"] {
+button[data-variant="primary"],
+.btn-primary {
   background-color: #8B5CF6 !important;
   border-color: #8B5CF6 !important;
 }
 
-.btn-primary:hover,
-button[data-variant="primary"]:hover {
+button[data-variant="primary"]:hover,
+.btn-primary:hover {
   background-color: #7C3AED !important;
   border-color: #7C3AED !important;
 }
 
-/* Links */
-a {
-  color: #A78BFA !important;
-}
+/* ============================================
+   SCROLLBAR
+   ============================================ */
 
-a:hover {
-  color: #8B5CF6 !important;
-}
-
-/* Table of contents */
-.toc a:hover,
-.table-of-contents a:hover {
-  color: #8B5CF6 !important;
-  background-color: rgba(139, 92, 246, 0.1) !important;
-}
-
-/* Header and navigation bar */
-.header,
-.navbar,
-.top-navigation {
-  background-color: #000000 !important;
-  border-bottom: 1px solid #333333 !important;
-}
-
-/* Footer */
-.footer {
-  background-color: #000000 !important;
-  border-top: 1px solid #333333 !important;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
+/* Dark theme */
+[data-theme="dark"] ::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit-scrollbar-track {
+[data-theme="dark"] ::-webkit-scrollbar-track {
   background: #111111;
 }
 
-::-webkit-scrollbar-thumb {
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
   background: #333333;
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
   background: #8B5CF6;
 }
 
-/* Mobile responsive adjustments */
-@media (max-width: 768px) {
-  .sidebar,
-  .mobile-sidebar {
-    background-color: #000000 !important;
-  }
-  
-  .mobile-menu-button:hover {
-    background-color: rgba(139, 92, 246, 0.1) !important;
-    color: #8B5CF6 !important;
-  }
+/* Light theme */
+[data-theme="light"] ::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* API documentation specific styles */
-.api-method {
-  border-left: 3px solid #8B5CF6 !important;
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #F9FAFB;
 }
 
-.api-endpoint {
-  background-color: #111111 !important;
-  border: 1px solid #333333 !important;
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
 }
 
-/* Response examples */
-.response-example,
-.request-example {
-  background-color: #111111 !important;
-  border: 1px solid #333333 !important;
-}
-
-/* Parameter fields */
-.param-field:hover {
-  background-color: rgba(139, 92, 246, 0.05) !important;
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #8B5CF6;
 }

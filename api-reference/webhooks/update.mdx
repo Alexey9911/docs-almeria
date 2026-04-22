@@ -1,0 +1,49 @@
+---
+title: "Update Webhook"
+api: "PUT https://api.unipay.com/v1/webhooks/{webhookId}"
+description: "Update webhook configuration"
+---
+
+# Update Webhook
+
+Update an existing webhook's URL or subscribed events.
+
+## Path Parameters
+
+<ParamField path="webhookId" type="string" required>
+  Webhook ID to update
+</ParamField>
+
+## Request Body
+
+<ParamField body="url" type="string">
+  New webhook URL
+</ParamField>
+
+<ParamField body="events" type="array">
+  Updated list of events to subscribe to
+</ParamField>
+
+<RequestExample>
+
+```bash cURL
+curl -X PUT "https://api.unipay.com/v1/webhooks/wh_123" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"events": ["transaction.completed", "transaction.failed"]}'
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "webhookId": "wh_123",
+  "url": "https://your-app.com/webhooks",
+  "events": ["transaction.completed", "transaction.failed"],
+  "updatedAt": "2026-04-22T12:30:00Z"
+}
+```
+
+</ResponseExample>

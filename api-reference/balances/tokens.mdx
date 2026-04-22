@@ -1,0 +1,81 @@
+---
+title: "List Supported Tokens"
+api: "GET https://api.unipay.com/v1/tokens"
+description: "Get list of all supported tokens and their metadata"
+---
+
+# List Supported Tokens
+
+Retrieve metadata for all tokens supported by Unipay.
+
+## Response
+
+<ResponseField name="tokens" type="array">
+  Array of supported token objects
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.unipay.com/v1/tokens" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const tokens = await fetch(
+  'https://api.unipay.com/v1/tokens',
+  { headers: { 'Authorization': 'Bearer YOUR_API_KEY' } }
+);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+  'https://api.unipay.com/v1/tokens',
+  headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "tokens": [
+    {
+      "symbol": "SOL",
+      "name": "Solana",
+      "mint": "So11111111111111111111111111111111111111112",
+      "decimals": 9,
+      "logoUri": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
+    },
+    {
+      "symbol": "USDC",
+      "name": "USD Coin",
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "decimals": 6,
+      "logoUri": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png"
+    },
+    {
+      "symbol": "USDT",
+      "name": "Tether USD",
+      "mint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+      "decimals": 6,
+      "logoUri": "https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.png"
+    }
+  ]
+}
+```
+
+</ResponseExample>
+
+## Token Metadata
+
+Each token includes:
+- **symbol**: Short identifier (e.g., "USDC")
+- **name**: Full token name
+- **mint**: Solana mint address
+- **decimals**: Number of decimal places
+- **logoUri**: Token logo image URL

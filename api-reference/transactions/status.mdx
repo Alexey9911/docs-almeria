@@ -1,0 +1,63 @@
+---
+title: "Get Transaction Status"
+api: "GET https://api.unipay.com/v1/transactions/{transactionId}"
+description: "Get the current status of a transaction"
+---
+
+# Get Transaction Status
+
+Retrieve detailed status information for a specific transaction.
+
+## Path Parameters
+
+<ParamField path="transactionId" type="string" required>
+  Transaction ID returned from transaction creation
+</ParamField>
+
+## Response
+
+<ResponseField name="transactionId" type="string">
+  Transaction identifier
+</ResponseField>
+
+<ResponseField name="status" type="string">
+  Current status: `pending`, `confirmed`, `processing`, `completed`, `failed`
+</ResponseField>
+
+<ResponseField name="signature" type="string">
+  On-chain transaction signature
+</ResponseField>
+
+<ResponseField name="blockTime" type="integer">
+  Block timestamp
+</ResponseField>
+
+<RequestExample>
+
+```bash cURL
+curl "https://api.unipay.com/v1/transactions/tx_123" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript JavaScript
+const tx = await fetch(
+  'https://api.unipay.com/v1/transactions/tx_123',
+  { headers: { 'Authorization': 'Bearer YOUR_API_KEY' } }
+);
+```
+
+</RequestExample>
+
+<ResponseExample>
+
+```json Response
+{
+  "transactionId": "tx_123",
+  "status": "completed",
+  "signature": "5VERv8NMvQakCcXn...",
+  "blockTime": 1640995200,
+  "fee": "0.000005"
+}
+```
+
+</ResponseExample>
