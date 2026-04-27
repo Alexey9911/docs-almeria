@@ -105,17 +105,22 @@
         {
           "anchor": "Website",
           "icon": "globe",
-          "href": "https://unipay.com"
+          "href": "https://unipayfi.pro"
         },
         {
           "anchor": "GitHub",
           "icon": "github",
-          "href": "https://github.com/unipay"
+          "href": "https://github.com/unipayy/solana-privacy-layer"
         },
         {
           "anchor": "Twitter",
           "icon": "twitter",
-          "href": "https://twitter.com/unipay"
+          "href": "https://x.com/UniPaymentss"
+        },
+        {
+          "anchor": "Telegram",
+          "icon": "telegram",
+          "href": "https://t.me/UniPaymentss"
         }
       ]
     }
@@ -124,14 +129,14 @@
     "primary": {
       "type": "button",
       "label": "Try Unipay",
-      "href": "https://app.unipay.com"
+      "href": "https://unipayfi.pro"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/unipay",
-      "github": "https://github.com/unipay",
-      "discord": "https://discord.gg/unipay"
+      "x": "https://x.com/UniPaymentss",
+      "github": "https://github.com/unipayy/solana-privacy-layer",
+      "website": "https://unipayfi.pro"
     }
   }
 }
